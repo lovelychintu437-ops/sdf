@@ -222,10 +222,26 @@ document.addEventListener("mouseup",()=>isDragging=false);
 document.addEventListener("touchend",()=>isDragging=false);
 
 function checkCollision(){
-  const m=male.getBoundingClientRect();
-  const f=female.getBoundingClientRect();
+  const m = male.getBoundingClientRect();
+  const f = female.getBoundingClientRect();
 
-  if(f.right>m.left && f.left<m.right && f.bottom>m.top && f.top<m.bottom){
+  /* 
+     Adjust these values to match where the ring is
+     These target points simulate finger tip positions
+  */
+
+  const maleFingerX = m.left + m.width * 0.85; 
+  const maleFingerY = m.top + m.height * 0.55;
+
+  const femaleFingerX = f.left + f.width * 0.15;
+  const femaleFingerY = f.top + f.height * 0.55;
+
+  const distance = Math.sqrt(
+    Math.pow(maleFingerX - femaleFingerX, 2) +
+    Math.pow(maleFingerY - femaleFingerY, 2)
+  );
+
+  if(distance < 25){   // smaller = more accurate
     triggerLove();
   }
 }
