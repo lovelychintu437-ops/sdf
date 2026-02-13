@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Love You ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  min-height:100vh;
+  background: linear-gradient(-45deg,#ff758c,#ff7eb3,#ff9a9e,#fad0c4);
+  background-size:400% 400%;
+  animation:gradientMove 12s ease infinite;
+  font-family:'Segoe UI',sans-serif;
+  color:white;
+  text-align:center;
+  overflow-x:hidden;
+}
+
+@keyframes gradientMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* Envelope */
+#envelope{
+  position:fixed;
+  top:30px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:70px;
+  cursor:pointer;
+  animation:pulse 1.5s infinite;
+  z-index:1000;
+}
+
+@keyframes pulse{
+  0%{transform:translateX(-50%) scale(1);}
+  50%{transform:translateX(-50%) scale(1.2);}
+  100%{transform:translateX(-50%) scale(1);}
+}
+
+#content{
+  display:none;
+  max-width:900px;
+  margin:140px auto 40px;
+  padding:20px;
+}
+
+#typingText{
+  font-size:1.2em;
+  line-height:1.9;
+  white-space:pre-line;
+  min-height:300px;
+}
+
+/* Center 3D Carousel */
+.carousel-container{
+  display:none;
+  margin-top:50px;
+  opacity:0;
+  transform:translateY(40px);
+  transition:all 1s ease;
+}
+
+.carousel-container.show{
+  display:block;
+  opacity:1;
+  transform:translateY(0);
+}
+
+.carousel-track{
+  position:relative;
+  height:420px;
+}
+
+.carousel-track img{
+  position:absolute;
+  top:0;
+  left:50%;
+  width:260px;
+  aspect-ratio:9/16;
+  object-fit:cover;
+  border-radius:25px;
+  transition:all 0.8s ease;
+  box-shadow:0 25px 50px rgba(0,0,0,0.4);
+}
+
+@media(max-width:768px){
+  .carousel-track{
+    height:340px;
+  }
+  .carousel-track img{
+    width:200px;
+  }
+}
+
+/* Floating hearts */
+.heart{
+  position:fixed;
+  bottom:-20px;
+  font-size:20px;
+  animation:floatUp 6s linear infinite;
+  opacity:0.7;
+}
+
+@keyframes floatUp{
+  from{transform:translateY(0);}
+  to{transform:translateY(-110vh);}
+}
+</style>
+</head>
+
+<body>
+
+<div id="envelope" onclick="startLove()">💌</div>
+
+<audio id="music" src="romantic.mp3" loop></audio>
+
+<div id="content">
+<div id="typingText"></div>
+
+<div class="carousel-container" id="carousel">
+  <div class="carousel-track" id="track"></div>
+</div>
+</div>
+
+<script>
+const text = `Hey Ammaduu❤️
+
+On 22nd June 2022-
+the first time I saw you on your birthday, in that purple dress. 
+That was the day I fell in love with you 💜
+
+Every moment with you makes me happy.
+
+When I'm sad or happy, you're the one I want to share everything
+
+Through all 4 years of BTech and still, I loved you quietly🫣.
+
+But after you went abroad, I started missing you a lot, 
+and even our calls and messages became less
+
+On this Valentine's Day, you said yes to me💘
+
+Love You Ammaduu😘`;
+
+let i=0;
+let index=0;
+let autoSlide;
+
+const typingElement=document.getElementById("typingText");
+const track=document.getElementById("track");
+
+/* Load 30 photos */
+for(let j=1;j<=30;j++){
+  const img=document.createElement("img");
+  img.src="pic"+j+".jpg";
+  track.appendChild(img);
+}
+
+function startLove(){
+  document.getElementById("content").style.display="block";
+  document.getElementById("envelope").style.display="none";
+  document.getElementById("music").play().catch(()=>{});
+  typeWriter();
+}
+
+function typeWriter(){
+  if(i<text.length){
+    typingElement.innerHTML+=text.charAt(i);
+    i++;
+    setTimeout(typeWriter,40);
+  }else{
+    showCarousel();
+  }
+}
+
+function showCarousel(){
+  const carousel=document.getElementById("carousel");
+  carousel.classList.add("show");
+  updateCarousel();
+  startAutoSlide();
+}
+
+function startAutoSlide(){
+  autoSlide=setInterval(()=>{
+    index++;
+    if(index>29) index=0;
+    updateCarousel();
+  },3000);
+}
+
+function updateCarousel(){
+  const images=track.children;
+
+  for(let k=0;k<images.length;k++){
+    let offset=k-index;
+
+    if(offset===0){
+      images[k].style.transform="translateX(-50%) scale(1.2)";
+      images[k].style.opacity="1";
+      images[k].style.zIndex="5";
+      images[k].style.filter="blur(0px)";
+    }
+    else if(offset===-1){
+      images[k].style.transform="translateX(-180%) scale(0.8)";
+      images[k].style.opacity="0.5";
+      images[k].style.zIndex="3";
+      images[k].style.filter="blur(2px)";
+    }
+    else if(offset===1){
+      images[k].style.transform="translateX(80%) scale(0.8)";
+      images[k].style.opacity="0.5";
+      images[k].style.zIndex="3";
+      images[k].style.filter="blur(2px)";
+    }
+    else{
+      images[k].style.transform="translateX(-50%) scale(0.6)";
+      images[k].style.opacity="0";
+      images[k].style.zIndex="1";
+    }
+  }
+}
+
+/* Floating Hearts */
+setInterval(()=>{
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerHTML="❤️";
+  heart.style.left=Math.random()*100+"vw";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),6000);
+},500);
+</script>
+
+</body>
+</html>
