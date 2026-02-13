@@ -199,16 +199,29 @@ function startAction(){
 /* Move Hands */
 function moveHandsToCenter(){
 
-  const center=window.innerWidth/2;
+  if(movedToCenter) return;
+  movedToCenter = true;
 
-  male.style.transition="1s";
-  female.style.transition="1s";
+  const center = window.innerWidth / 2;
 
-  male.style.left=(center - male.offsetWidth - 20)+"px";
-  female.style.left=(center + 20)+"px";
+  male.style.transition = "1s";
+  female.style.transition = "1s";
 
-  setTimeout(triggerLove,1000);
-}
+  /* 👇 VERY CLOSE POSITION */
+  male.style.left = (center - male.offsetWidth + 30) + "px";
+
+  /* 👇 Overlap slightly on top of male hand */
+  female.style.left = (center - 30) + "px";
+
+  /* 👇 Bring female hand above male hand */
+  female.style.zIndex = "1001";
+  male.style.zIndex = "1000";
+
+  /* 💍 Open only AFTER reaching */
+  setTimeout(()=>{
+    triggerLove();
+  },1000);
+  }
 
 /* After Hands Meet */
 function triggerLove(){
