@@ -153,7 +153,7 @@ body{
 </div>
 
 <script>
-const text = `Hey Ammaduu❤️
+const text = `Happy valentine's day Ammaduu❤️
 
 On 22nd June 2022-
 the first time I saw you on your birthday, in that purple dress. 
@@ -190,10 +190,15 @@ for(let j=1;j<=30;j++){
 }
 
 /* ===== DRAG SYSTEM ===== */
-
 let dragging=false;
 
-female.addEventListener("pointerdown",()=>dragging=true);
+female.addEventListener("pointerdown",()=>{
+  dragging=true;
+
+  /* 🎵 Play song immediately on first touch */
+  document.getElementById("music").play().catch(()=>{});
+});
+
 window.addEventListener("pointerup",()=>dragging=false);
 
 window.addEventListener("pointermove",e=>{
