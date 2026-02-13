@@ -24,39 +24,47 @@ body{
   100%{background-position:0% 50%}
 }
 
-/* 💍 Engagement Area */
+/* 💍 Engagement Hands */
 #engagementArea{
-  margin-top:80px;
-  position:relative;
+  position:fixed;
   width:100%;
-  height:240px;
+  height:100vh;
+  top:0;
+  left:0;
+  z-index:1000;
 }
 
 #maleHand{
-  position:absolute;
-  right:5%;
+  position:fixed;
+  left:30px;
   top:50%;
   transform:translateY(-50%);
-  width:200px;
+  width:220px;
+  pointer-events:none;
 }
 
 #femaleHand{
-  position:absolute;
-  left:5%;
+  position:fixed;
+  right:30px;
   top:50%;
   transform:translateY(-50%);
   width:220px;
   cursor:grab;
-  user-select:none;
   touch-action:none;
-  transition:transform 0.3s ease;
+  transition:0.3s;
+}
+
+@media(max-width:768px){
+  #maleHand,#femaleHand{
+    width:150px;
+  }
 }
 
 /* Content */
 #content{
   display:none;
   max-width:900px;
-  margin:80px auto 40px;
+  margin:140px auto 40px;
   padding:20px;
 }
 
@@ -67,7 +75,7 @@ body{
   min-height:300px;
 }
 
-/* Carousel */
+/* Center 3D Carousel */
 .carousel-container{
   display:none;
   margin-top:50px;
@@ -99,6 +107,15 @@ body{
   box-shadow:0 25px 50px rgba(0,0,0,0.4);
 }
 
+@media(max-width:768px){
+  .carousel-track{
+    height:340px;
+  }
+  .carousel-track img{
+    width:200px;
+  }
+}
+
 /* Floating hearts */
 .heart{
   position:fixed;
@@ -117,10 +134,10 @@ body{
 
 <body>
 
-<!-- 💍 Engagement Trigger -->
+<!-- 💍 Engagement -->
 <div id="engagementArea">
-  <img src="male_hand.png" id="maleHand">
-  <img src="female_hand.png" id="femaleHand">
+  <img src="male-hand-ring.png" id="maleHand">
+  <img src="female-hand.png" id="femaleHand">
 </div>
 
 <audio id="music" src="romantic.mp3" loop></audio>
@@ -134,7 +151,7 @@ body{
 </div>
 
 <script>
-const text = `Happy Valentine's Day Ammaduu❤️
+const text = `Hey Ammaduu❤️
 
 On 22nd June 2022-
 the first time I saw you on your birthday, in that purple dress. 
@@ -159,66 +176,74 @@ let autoSlide;
 
 const typingElement=document.getElementById("typingText");
 const track=document.getElementById("track");
-const femaleHand=document.getElementById("femaleHand");
-const maleHand=document.getElementById("maleHand");
+const male=document.getElementById("maleHand");
+const female=document.getElementById("femaleHand");
 const engagementArea=document.getElementById("engagementArea");
 
-/* Load photos */
+/* Load 30 photos */
 for(let j=1;j<=30;j++){
   const img=document.createElement("img");
   img.src="pic"+j+".jpg";
   track.appendChild(img);
 }
 
-/* 💍 Drag logic */
-let dragging=false, offsetX=0;
+/* Engagement Drag Logic */
+let isDragging=false,offsetX=0,offsetY=0;
 
-femaleHand.addEventListener("mousedown",(e)=>{
-  dragging=true;
-  offsetX=e.clientX-femaleHand.offsetLeft;
-});
+female.addEventListener("mousedown",startDrag);
+female.addEventListener("touchstart",startDrag);
 
-document.addEventListener("mousemove",(e)=>{
-  if(!dragging) return;
-  let x=e.clientX-offsetX;
-  const maxX=engagementArea.clientWidth-femaleHand.offsetWidth;
-  x=Math.max(0,Math.min(x,maxX));
-  femaleHand.style.left=x+"px";
+function startDrag(e){
+  isDragging=true;
+  const rect=female.getBoundingClientRect();
+  const clientX=e.touches?e.touches[0].clientX:e.clientX;
+  const clientY=e.touches?e.touches[0].clientY:e.clientY;
+  offsetX=clientX-rect.left;
+  offsetY=clientY-rect.top;
+}
+
+document.addEventListener("mousemove",drag);
+document.addEventListener("touchmove",drag);
+
+function drag(e){
+  if(!isDragging) return;
+  const clientX=e.touches?e.touches[0].clientX:e.clientX;
+  const clientY=e.touches?e.touches[0].clientY:e.clientY;
+
+  female.style.left=(clientX-offsetX)+"px";
+  female.style.top=(clientY-offsetY)+"px";
+  female.style.right="auto";
+  female.style.transform="none";
+
   checkCollision();
-});
+}
 
-document.addEventListener("mouseup",()=>dragging=false);
+document.addEventListener("mouseup",()=>isDragging=false);
+document.addEventListener("touchend",()=>isDragging=false);
 
-/* Touch support */
-femaleHand.addEventListener("touchstart",(e)=>{
-  dragging=true;
-  offsetX=e.touches[0].clientX-femaleHand.offsetLeft;
-});
-
-document.addEventListener("touchmove",(e)=>{
-  if(!dragging) return;
-  let x=e.touches[0].clientX-offsetX;
-  const maxX=engagementArea.clientWidth-femaleHand.offsetWidth;
-  x=Math.max(0,Math.min(x,maxX));
-  femaleHand.style.left=x+"px";
-  checkCollision();
-  e.preventDefault();
-},{passive:false});
-
-document.addEventListener("touchend",()=>dragging=false);
-
-/* 💖 When ring touches */
 function checkCollision(){
-  const f=femaleHand.getBoundingClientRect();
-  const m=maleHand.getBoundingClientRect();
+  const m=male.getBoundingClientRect();
+  const f=female.getBoundingClientRect();
 
-  if(!(f.right<m.left||f.left>m.right||f.bottom<m.top||f.top>m.bottom)){
-    startLove();
+  if(f.right>m.left && f.left<m.right && f.bottom>m.top && f.top<m.bottom){
+    triggerLove();
   }
 }
 
+function triggerLove(){
+  isDragging=false;
+  female.style.transition="0.4s";
+  female.style.left=(male.getBoundingClientRect().right-40)+"px";
+  female.style.top=(male.getBoundingClientRect().top)+"px";
+
+  setTimeout(()=>{
+    engagementArea.style.display="none";
+    startLove();
+  },600);
+}
+
+/* Original Love Logic */
 function startLove(){
-  engagementArea.style.display="none";
   document.getElementById("content").style.display="block";
   document.getElementById("music").play().catch(()=>{});
   typeWriter();
