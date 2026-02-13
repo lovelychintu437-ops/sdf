@@ -1,147 +1,315 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Drag to Love 💖</title>
+<title>Love You ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
   margin:0;
-  overflow:hidden;
-  background:linear-gradient(135deg,#ff758c,#ff7eb3);
-  touch-action:none;
+  min-height:100vh;
+  background: linear-gradient(-45deg,#ff758c,#ff7eb3,#ff9a9e,#fad0c4);
+  background-size:400% 400%;
+  animation:gradientMove 12s ease infinite;
+  font-family:'Segoe UI',sans-serif;
+  color:white;
+  text-align:center;
+  overflow-x:hidden;
 }
 
-/* 💕 Hands */
-.hand{
+@keyframes gradientMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* 💍 Engagement Area */
+#engagementArea{
   position:fixed;
-  bottom:60px;
-  width:180px;
-  user-select:none;
+  width:100%;
+  height:100vh;
+  top:0;
+  left:0;
+  z-index:1000;
 }
 
 #maleHand{
-  left:20px;
+  position:fixed;
+  left:30px;
+  top:50%;
+  transform:translateY(-50%);
+  width:320px;
+  pointer-events:none;
 }
 
 #femaleHand{
-  right:20px;
-  cursor:grab;
-}
-
-/* 💖 Text */
-#loveText{
   position:fixed;
-  top:40%;
-  width:100%;
-  text-align:center;
-  font-size:60px;
-  color:white;
-  opacity:0;
-  transition:1s;
+  right:30px;
+  top:50%;
+  transform:translateY(-50%);
+  width:320px;
+  cursor:grab;
+  touch-action:none;
 }
 
-/* ❤️ Hearts */
+/* Content */
+#content{
+  display:none;
+  max-width:900px;
+  margin:140px auto 40px;
+  padding:20px;
+}
+
+#typingText{
+  font-size:1.2em;
+  line-height:1.9;
+  white-space:pre-line;
+  min-height:300px;
+}
+
+/* Carousel */
+.carousel-container{
+  display:none;
+  margin-top:50px;
+  opacity:0;
+  transform:translateY(40px);
+  transition:all 1s ease;
+}
+
+.carousel-container.show{
+  display:block;
+  opacity:1;
+  transform:translateY(0);
+}
+
+.carousel-track{
+  position:relative;
+  height:420px;
+}
+
+.carousel-track img{
+  position:absolute;
+  top:0;
+  left:50%;
+  width:260px;
+  aspect-ratio:9/16;
+  object-fit:cover;
+  border-radius:25px;
+  transition:all 0.8s ease;
+  box-shadow:0 25px 50px rgba(0,0,0,0.4);
+}
+
+/* Floating hearts */
 .heart{
   position:fixed;
-  bottom:0;
-  font-size:26px;
-  animation: floatUp 4s linear infinite;
+  bottom:-20px;
+  font-size:20px;
+  animation:floatUp 6s linear infinite;
+  opacity:0.7;
 }
 
 @keyframes floatUp{
-  from{ transform:translateY(0); opacity:1; }
-  to{ transform:translateY(-100vh); opacity:0; }
+  from{transform:translateY(0);}
+  to{transform:translateY(-110vh);}
 }
 </style>
 </head>
 
 <body>
 
-<img id="maleHand" class="hand"
-src="https://i.ibb.co/ZYW3VTp/male-hand.png">
+<div id="engagementArea">
+  <img src="male-hand-ring.png" id="maleHand">
+  <img src="female-hand.png" id="femaleHand">
+</div>
 
-<img id="femaleHand" class="hand"
-src="https://i.ibb.co/Jq7xZ6K/female-hand.png">
+<audio id="music" src="romantic.mp3" loop></audio>
 
-<div id="loveText">LOVE YOU ❤️</div>
+<div id="content">
+  <div id="typingText"></div>
 
-<audio id="song"
-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+  <div class="carousel-container" id="carousel">
+    <div class="carousel-track" id="track"></div>
+  </div>
+</div>
 
 <script>
 
-const male = document.getElementById("maleHand");
-const female = document.getElementById("femaleHand");
-const text = document.getElementById("loveText");
-const song = document.getElementById("song");
+const text = `Happy valentine's day Ammaduu❤️
 
-let dragging = false;
-let finished = false;
+On 22nd June 2022-
+the first time I saw you on your birthday, in that purple dress. 
+That was the day I fell in love with you 💜
 
-/* 👉 START DRAG */
-female.addEventListener("pointerdown", (e)=>{
-  dragging = true;
+Every moment with you makes me happy.
+
+When I'm sad or happy, you're the one I want to share everything
+
+Through all 4 years of BTech and still, I loved you quietly🫣.
+
+But after you went abroad, I started missing you a lot, 
+and even our calls and messages became less
+
+On this Valentine's Day, you said yes to me💘
+
+Love You Ammaduu😘`;
+
+let i=0;
+let index=0;
+let autoSlide;
+
+const typingElement=document.getElementById("typingText");
+const track=document.getElementById("track");
+const male=document.getElementById("maleHand");
+const female=document.getElementById("femaleHand");
+const engagementArea=document.getElementById("engagementArea");
+
+/* Convert RIGHT → LEFT so drag works */
+window.addEventListener("load", ()=>{
+  const rect=female.getBoundingClientRect();
+  female.style.left=rect.left+"px";
+  female.style.right="auto";
+});
+
+/* Load photos */
+for(let j=1;j<=30;j++){
+  const img=document.createElement("img");
+  img.src="pic"+j+".jpg";
+  track.appendChild(img);
+}
+
+/* 💖 DRAG SYSTEM (WORKING) */
+let isDragging=false;
+let moved=false;
+
+female.addEventListener("pointerdown", e=>{
+  isDragging=true;
   female.setPointerCapture(e.pointerId);
 });
 
-/* 👉 DRAG MOVE */
-female.addEventListener("pointermove", (e)=>{
-  if(!dragging || finished) return;
+female.addEventListener("pointermove", e=>{
+  if(!isDragging || moved) return;
 
-  const x = e.clientX;
+  let x=e.clientX - female.offsetWidth/2;
 
-  /* Move female */
-  female.style.left = (x - female.offsetWidth/2) + "px";
-  female.style.right = "auto";
+  const min=window.innerWidth*0.25;
+  const max=window.innerWidth - female.offsetWidth - 10;
 
-  /* Move male toward her */
-  male.style.left = (x - male.offsetWidth - 10) + "px";
+  if(x<min) x=min;
+  if(x>max) x=max;
 
-  checkTouch();
+  female.style.left=x+"px";
+
+  checkClose();
 });
 
-/* 👉 STOP DRAG */
 female.addEventListener("pointerup", ()=>{
-  dragging = false;
+  isDragging=false;
 });
 
-/* 💖 Check if hands meet */
-function checkTouch(){
+/* VERY CLOSE CHECK */
+function checkClose(){
+  const m=male.getBoundingClientRect();
+  const f=female.getBoundingClientRect();
 
-  const m = male.getBoundingClientRect();
-  const f = female.getBoundingClientRect();
-
-  if(f.left <= m.right){
-
-    finished = true;
-    startLove();
+  if(Math.abs(f.left - m.right) < 8){
+    snapTogether();
   }
 }
 
-/* 💘 Trigger Love */
+/* SNAP + OPEN */
+function snapTogether(){
+  if(moved) return;
+
+  moved=true;
+  isDragging=false;
+
+  female.style.transition="0.4s";
+  female.style.left=(male.getBoundingClientRect().right - 5)+"px";
+
+  setTimeout(()=>{
+    triggerLove();
+  },400);
+}
+
+/* Love Flow */
+function triggerLove(){
+  engagementArea.style.display="none";
+  startLove();
+}
+
 function startLove(){
-
-  text.style.opacity = "1";
-  song.play();
-
-  setInterval(createHeart,300);
+  document.getElementById("content").style.display="block";
+  document.getElementById("music").play().catch(()=>{});
+  typeWriter();
 }
 
-/* ❤️ Hearts */
-function createHeart(){
-
-  const h = document.createElement("div");
-  h.className = "heart";
-  h.innerHTML = "❤️";
-
-  h.style.left = Math.random()*100 + "vw";
-  h.style.fontSize = (20 + Math.random()*30) + "px";
-
-  document.body.appendChild(h);
-
-  setTimeout(()=>h.remove(),4000);
+function typeWriter(){
+  if(i<text.length){
+    typingElement.innerHTML+=text.charAt(i);
+    i++;
+    setTimeout(typeWriter,40);
+  }else{
+    showCarousel();
+  }
 }
+
+function showCarousel(){
+  const carousel=document.getElementById("carousel");
+  carousel.classList.add("show");
+  updateCarousel();
+  startAutoSlide();
+}
+
+function startAutoSlide(){
+  autoSlide=setInterval(()=>{
+    index++;
+    if(index>29) index=0;
+    updateCarousel();
+  },3000);
+}
+
+function updateCarousel(){
+  const images=track.children;
+
+  for(let k=0;k<images.length;k++){
+    let offset=k-index;
+
+    if(offset===0){
+      images[k].style.transform="translateX(-50%) scale(1.2)";
+      images[k].style.opacity="1";
+      images[k].style.zIndex="5";
+      images[k].style.filter="blur(0px)";
+    }
+    else if(offset===-1){
+      images[k].style.transform="translateX(-180%) scale(0.8)";
+      images[k].style.opacity="0.5";
+      images[k].style.zIndex="3";
+      images[k].style.filter="blur(2px)";
+    }
+    else if(offset===1){
+      images[k].style.transform="translateX(80%) scale(0.8)";
+      images[k].style.opacity="0.5";
+      images[k].style.zIndex="3";
+      images[k].style.filter="blur(2px)";
+    }
+    else{
+      images[k].style.transform="translateX(-50%) scale(0.6)";
+      images[k].style.opacity="0";
+      images[k].style.zIndex="1";
+    }
+  }
+}
+
+/* Floating Hearts */
+setInterval(()=>{
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerHTML="❤️";
+  heart.style.left=Math.random()*100+"vw";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),6000);
+},500);
 
 </script>
 
