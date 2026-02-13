@@ -9,28 +9,26 @@ body{
   margin:0;
   overflow:hidden;
   background: linear-gradient(to top, #ff758c, #ff7eb3);
-  font-family: Arial, sans-serif;
 }
 
 /* 💕 Hands */
 .hand{
-  position: absolute;
-  bottom: 80px;
-  width: 180px;
-  transition: 1s ease-in-out;
+  position:absolute;
+  bottom:80px;
+  width:180px;
+  transition:1s ease-in-out;
 }
 
+/* Start OFF-SCREEN */
 #maleHand{
-  left: -200px;
-  z-index: 1000;
+  left:-220px;
 }
 
 #femaleHand{
-  right: -200px;
-  z-index: 1000;
+  left:calc(100vw + 40px); /* 👈 important */
 }
 
-/* 💖 Love Text */
+/* 💖 Text */
 #loveText{
   position:absolute;
   top:35%;
@@ -40,16 +38,15 @@ body{
   color:white;
   opacity:0;
   transition:1s;
-  text-shadow:0 0 20px rgba(255,255,255,0.8);
+  text-shadow:0 0 20px white;
 }
 
-/* ❤️ Floating Hearts */
+/* ❤️ Hearts */
 .heart{
   position:absolute;
   bottom:0;
   font-size:24px;
   animation: floatUp 4s linear infinite;
-  opacity:0.8;
 }
 
 @keyframes floatUp{
@@ -57,7 +54,7 @@ body{
   to{ transform:translateY(-100vh); opacity:0; }
 }
 
-/* 💕 Touch Button */
+/* 💕 Button */
 #touchBtn{
   position:absolute;
   top:20px;
@@ -77,79 +74,64 @@ body{
 
 <body>
 
-<button id="touchBtn" onclick="moveHandsToCenter()">Touch My Heart 💖</button>
+<button id="touchBtn" onclick="moveHands()">Touch My Heart 💖</button>
 
-<!-- 💑 Hands -->
 <img id="maleHand" class="hand"
 src="https://i.ibb.co/ZYW3VTp/male-hand.png">
 
 <img id="femaleHand" class="hand"
 src="https://i.ibb.co/Jq7xZ6K/female-hand.png">
 
-<!-- 💖 Love Text -->
 <div id="loveText">I LOVE YOU ❤️</div>
 
-<!-- 🎵 Music -->
-<audio id="loveSong" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+<audio id="song"
+src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
 <script>
 
 const male = document.getElementById("maleHand");
 const female = document.getElementById("femaleHand");
-const loveText = document.getElementById("loveText");
-const song = document.getElementById("loveSong");
+const text = document.getElementById("loveText");
+const song = document.getElementById("song");
 
 let moved = false;
 
-function moveHandsToCenter(){
+function moveHands(){
 
   if(moved) return;
   moved = true;
 
   const center = window.innerWidth / 2;
 
-  /* Convert female from right → left */
-  const femaleRect = female.getBoundingClientRect();
-  female.style.left = femaleRect.left + "px";
-  female.style.right = "auto";
+  /* Move VERY CLOSE */
+  male.style.left = (center - male.offsetWidth + 25) + "px";
+  female.style.left = (center - 25) + "px";
 
-  /* Move hands VERY CLOSE */
-  male.style.left = (center - male.offsetWidth + 20) + "px";
-  female.style.left = (center - 20) + "px";
-
-  female.style.zIndex = "1001";
-  male.style.zIndex = "1000";
-
-  /* After touching */
   setTimeout(()=>{
-    showLove();
+    startLove();
   },1000);
 }
 
-function showLove(){
+function startLove(){
 
-  /* Show text */
-  loveText.style.opacity = "1";
-
-  /* Play music */
+  text.style.opacity = "1";
   song.play();
 
-  /* Start hearts */
   setInterval(createHeart, 300);
 }
 
 function createHeart(){
 
-  const heart = document.createElement("div");
-  heart.className = "heart";
-  heart.innerHTML = "❤️";
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.innerHTML = "❤️";
 
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.fontSize = (20 + Math.random()*30) + "px";
+  h.style.left = Math.random()*100 + "vw";
+  h.style.fontSize = (20 + Math.random()*30) + "px";
 
-  document.body.appendChild(heart);
+  document.body.appendChild(h);
 
-  setTimeout(()=> heart.remove(), 4000);
+  setTimeout(()=>h.remove(),4000);
 }
 
 </script>
