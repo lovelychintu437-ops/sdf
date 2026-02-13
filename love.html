@@ -2,50 +2,50 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Drag Love 💖</title>
+<title>Drag to Love 💖</title>
 
 <style>
 body{
   margin:0;
   overflow:hidden;
-  background: linear-gradient(to top, #ff758c, #ff7eb3);
-  user-select:none;
+  background:linear-gradient(135deg,#ff758c,#ff7eb3);
+  touch-action:none;
 }
 
 /* 💕 Hands */
 .hand{
-  position:absolute;
-  bottom:80px;
+  position:fixed;
+  bottom:60px;
   width:180px;
-  transition:0.2s;
+  user-select:none;
 }
 
 #maleHand{
-  left:10px;
+  left:20px;
 }
 
 #femaleHand{
-  right:10px;
+  right:20px;
+  cursor:grab;
 }
 
 /* 💖 Text */
 #loveText{
-  position:absolute;
-  top:35%;
+  position:fixed;
+  top:40%;
   width:100%;
   text-align:center;
   font-size:60px;
   color:white;
   opacity:0;
   transition:1s;
-  text-shadow:0 0 20px white;
 }
 
 /* ❤️ Hearts */
 .heart{
-  position:absolute;
+  position:fixed;
   bottom:0;
-  font-size:24px;
+  font-size:26px;
   animation: floatUp 4s linear infinite;
 }
 
@@ -64,7 +64,7 @@ src="https://i.ibb.co/ZYW3VTp/male-hand.png">
 <img id="femaleHand" class="hand"
 src="https://i.ibb.co/Jq7xZ6K/female-hand.png">
 
-<div id="loveText">I LOVE YOU ❤️</div>
+<div id="loveText">LOVE YOU ❤️</div>
 
 <audio id="song"
 src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
@@ -79,55 +79,56 @@ const song = document.getElementById("song");
 let dragging = false;
 let finished = false;
 
-/* 👉 DRAG START (female hand) */
-female.addEventListener("pointerdown", ()=>{
+/* 👉 START DRAG */
+female.addEventListener("pointerdown", (e)=>{
   dragging = true;
+  female.setPointerCapture(e.pointerId);
 });
 
 /* 👉 DRAG MOVE */
-window.addEventListener("pointermove", e=>{
+female.addEventListener("pointermove", (e)=>{
   if(!dragging || finished) return;
 
   const x = e.clientX;
 
-  /* Move female hand */
+  /* Move female */
   female.style.left = (x - female.offsetWidth/2) + "px";
   female.style.right = "auto";
 
-  /* Move male hand automatically toward center */
-  male.style.left = (x - male.offsetWidth - 20) + "px";
+  /* Move male toward her */
+  male.style.left = (x - male.offsetWidth - 10) + "px";
 
   checkTouch();
 });
 
-/* 👉 DRAG END */
-window.addEventListener("pointerup", ()=>{
+/* 👉 STOP DRAG */
+female.addEventListener("pointerup", ()=>{
   dragging = false;
 });
 
-/* 💖 Check if hands touched */
+/* 💖 Check if hands meet */
 function checkTouch(){
 
-  const maleRect = male.getBoundingClientRect();
-  const femaleRect = female.getBoundingClientRect();
+  const m = male.getBoundingClientRect();
+  const f = female.getBoundingClientRect();
 
-  if(femaleRect.left <= maleRect.right){
+  if(f.left <= m.right){
 
     finished = true;
     startLove();
   }
 }
 
-/* 💘 Love Trigger */
+/* 💘 Trigger Love */
 function startLove(){
 
   text.style.opacity = "1";
   song.play();
 
-  setInterval(createHeart, 300);
+  setInterval(createHeart,300);
 }
 
-/* ❤️ Floating hearts */
+/* ❤️ Hearts */
 function createHeart(){
 
   const h = document.createElement("div");
