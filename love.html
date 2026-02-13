@@ -232,25 +232,21 @@ document.addEventListener("touchend",()=>isDragging=false);
 
 /* Precise Finger Distance Check */
 function checkCollision(){
-  const m=male.getBoundingClientRect();
-  const f=female.getBoundingClientRect();
 
-  const maleFingerX=m.left+m.width*0.85;
-  const maleFingerY=m.top+m.height*0.55;
+  const m = male.getBoundingClientRect();
+  const f = female.getBoundingClientRect();
 
-  const femaleFingerX=f.left+f.width*0.15;
-  const femaleFingerY=f.top+f.height*0.55;
+  /* Exact ring X position on male hand */
+  const ringX = m.left + (m.width * 0.83);
 
-  const distance=Math.sqrt(
-    Math.pow(maleFingerX-femaleFingerX,2)+
-    Math.pow(maleFingerY-femaleFingerY,2)
-  );
+  /* Exact finger tip X on female hand */
+  const fingerX = f.left + (f.width * 0.14);
 
-  if(distance<3){
+  /* When finger reaches ring */
+  if(fingerX >= ringX){
     triggerLove();
   }
-}
-
+  }
 function triggerLove(){
   isDragging=false;
 
