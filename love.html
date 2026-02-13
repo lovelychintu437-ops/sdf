@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Love Page 💖</title>
+<title>Drag Love 💖</title>
 
 <style>
 body{
   margin:0;
   overflow:hidden;
   background: linear-gradient(to top, #ff758c, #ff7eb3);
+  user-select:none;
 }
 
 /* 💕 Hands */
@@ -16,16 +17,15 @@ body{
   position:absolute;
   bottom:80px;
   width:180px;
-  transition:1s ease-in-out;
+  transition:0.2s;
 }
 
-/* Start OFF-SCREEN */
 #maleHand{
-  left:-220px;
+  left:10px;
 }
 
 #femaleHand{
-  left:calc(100vw + 40px); /* 👈 important */
+  right:10px;
 }
 
 /* 💖 Text */
@@ -53,28 +53,10 @@ body{
   from{ transform:translateY(0); opacity:1; }
   to{ transform:translateY(-100vh); opacity:0; }
 }
-
-/* 💕 Button */
-#touchBtn{
-  position:absolute;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:15px 30px;
-  font-size:20px;
-  border:none;
-  border-radius:30px;
-  background:white;
-  color:#ff4b7d;
-  cursor:pointer;
-  font-weight:bold;
-}
 </style>
 </head>
 
 <body>
-
-<button id="touchBtn" onclick="moveHands()">Touch My Heart 💖</button>
 
 <img id="maleHand" class="hand"
 src="https://i.ibb.co/ZYW3VTp/male-hand.png">
@@ -94,24 +76,49 @@ const female = document.getElementById("femaleHand");
 const text = document.getElementById("loveText");
 const song = document.getElementById("song");
 
-let moved = false;
+let dragging = false;
+let finished = false;
 
-function moveHands(){
+/* 👉 DRAG START (female hand) */
+female.addEventListener("pointerdown", ()=>{
+  dragging = true;
+});
 
-  if(moved) return;
-  moved = true;
+/* 👉 DRAG MOVE */
+window.addEventListener("pointermove", e=>{
+  if(!dragging || finished) return;
 
-  const center = window.innerWidth / 2;
+  const x = e.clientX;
 
-  /* Move VERY CLOSE */
-  male.style.left = (center - male.offsetWidth + 25) + "px";
-  female.style.left = (center - 25) + "px";
+  /* Move female hand */
+  female.style.left = (x - female.offsetWidth/2) + "px";
+  female.style.right = "auto";
 
-  setTimeout(()=>{
+  /* Move male hand automatically toward center */
+  male.style.left = (x - male.offsetWidth - 20) + "px";
+
+  checkTouch();
+});
+
+/* 👉 DRAG END */
+window.addEventListener("pointerup", ()=>{
+  dragging = false;
+});
+
+/* 💖 Check if hands touched */
+function checkTouch(){
+
+  const maleRect = male.getBoundingClientRect();
+  const femaleRect = female.getBoundingClientRect();
+
+  if(femaleRect.left <= maleRect.right){
+
+    finished = true;
     startLove();
-  },1000);
+  }
 }
 
+/* 💘 Love Trigger */
 function startLove(){
 
   text.style.opacity = "1";
@@ -120,6 +127,7 @@ function startLove(){
   setInterval(createHeart, 300);
 }
 
+/* ❤️ Floating hearts */
 function createHeart(){
 
   const h = document.createElement("div");
