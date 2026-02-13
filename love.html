@@ -24,29 +24,24 @@ body{
   100%{background-position:0% 50%}
 }
 
-/* 💍 HANDS */
+/* ❤️ HANDS */
 .hand{
   position:fixed;
-  top:50%;
-  transform:translateY(-50%);
-  width:260px;
-  cursor:grab;
+  top:70%;
+  width:220px;
   z-index:1000;
   transition:1s;
   user-select:none;
 }
 
-#maleHand{ left:0; }
-#femaleHand{
-  right:0;
-  transform:translateY(-50%) scaleX(-1);
-}
+#maleHand{ left:-40px; }
+#femaleHand{ right:-40px; transform:scaleX(-1); cursor:grab; }
 
-/* CONTENT — SAME AS YOURS */
+/* Content */
 #content{
   display:none;
   max-width:900px;
-  margin:140px auto 40px;
+  margin:40px auto;
   padding:20px;
 }
 
@@ -57,7 +52,7 @@ body{
   min-height:300px;
 }
 
-/* 3D Carousel — SAME */
+/* Carousel */
 .carousel-container{
   display:none;
   margin-top:50px;
@@ -89,7 +84,7 @@ body{
   box-shadow:0 25px 50px rgba(0,0,0,0.4);
 }
 
-/* Floating hearts — SAME */
+/* Hearts */
 .heart{
   position:fixed;
   bottom:-20px;
@@ -107,7 +102,7 @@ body{
 
 <body>
 
-<!-- 💍 HANDS -->
+<!-- ❤️ HANDS -->
 <img src="male-hand-ring.png" id="maleHand" class="hand">
 <img src="female-hand.png" id="femaleHand" class="hand">
 
@@ -124,56 +119,35 @@ body{
 <script>
 const male=document.getElementById("maleHand");
 const female=document.getElementById("femaleHand");
+const content=document.getElementById("content");
 
-/* Convert right → left for dragging */
-window.onload=()=>{
-  const r=female.getBoundingClientRect();
-  female.style.left=r.left+"px";
-  female.style.right="auto";
-};
-
-let dragging=false;
 let moved=false;
 
-/* DRAG START */
-female.addEventListener("pointerdown",e=>{
-  dragging=true;
-  female.setPointerCapture(e.pointerId);
-});
+/* 👉 Drag female hand */
+female.addEventListener("touchstart",moveHands);
+female.addEventListener("mousedown",moveHands);
 
-/* DRAG MOVE */
-window.addEventListener("pointermove",e=>{
-  if(!dragging || moved) return;
-
-  female.style.left=(e.clientX - female.offsetWidth/2)+"px";
-
-  const center=window.innerWidth/2;
-
-  if(e.clientX < center+40){
-    moveHands();
-  }
-});
-
-/* DRAG END */
-window.addEventListener("pointerup",()=> dragging=false);
-
-/* 💖 MOVE BOTH TO CENTER */
 function moveHands(){
 
   if(moved) return;
   moved=true;
 
-  const center=window.innerWidth/2;
+  const center = window.innerWidth / 2;
 
-  male.style.left=(center - male.offsetWidth + 20)+"px";
-  female.style.left=(center - 20)+"px";
+  male.style.left = (center - male.offsetWidth + 10) + "px";
+  female.style.left = (center - 10) + "px";
+  female.style.right = "auto";
+  female.style.zIndex = "1001";
 
-  female.style.zIndex="1001";
-
-  setTimeout(startLove,900);
+  /* 💥 Disappear after meeting */
+  setTimeout(()=>{
+    male.style.display="none";
+    female.style.display="none";
+    startLove();
+  },1000);
 }
 
-/* ---------- YOUR ORIGINAL CONTENT ---------- */
+/* ❤️ YOUR ORIGINAL CONTENT */
 
 const text = `Hey Ammaduu❤️
 
@@ -196,6 +170,7 @@ Love You Ammaduu😘`;
 
 let i=0;
 let index=0;
+let autoSlide;
 
 const typingElement=document.getElementById("typingText");
 const track=document.getElementById("track");
@@ -208,7 +183,7 @@ for(let j=1;j<=30;j++){
 }
 
 function startLove(){
-  document.getElementById("content").style.display="block";
+  content.style.display="block";
   document.getElementById("music").play().catch(()=>{});
   typeWriter();
 }
@@ -227,8 +202,11 @@ function showCarousel(){
   const carousel=document.getElementById("carousel");
   carousel.classList.add("show");
   updateCarousel();
+  startAutoSlide();
+}
 
-  setInterval(()=>{
+function startAutoSlide(){
+  autoSlide=setInterval(()=>{
     index++;
     if(index>29) index=0;
     updateCarousel();
@@ -245,29 +223,24 @@ function updateCarousel(){
       images[k].style.transform="translateX(-50%) scale(1.2)";
       images[k].style.opacity="1";
       images[k].style.zIndex="5";
-      images[k].style.filter="blur(0px)";
     }
     else if(offset===-1){
       images[k].style.transform="translateX(-180%) scale(0.8)";
       images[k].style.opacity="0.5";
       images[k].style.zIndex="3";
-      images[k].style.filter="blur(2px)";
     }
     else if(offset===1){
       images[k].style.transform="translateX(80%) scale(0.8)";
       images[k].style.opacity="0.5";
       images[k].style.zIndex="3";
-      images[k].style.filter="blur(2px)";
     }
     else{
-      images[k].style.transform="translateX(-50%) scale(0.6)";
       images[k].style.opacity="0";
-      images[k].style.zIndex="1";
     }
   }
 }
 
-/* Floating Hearts */
+/* Floating hearts */
 setInterval(()=>{
   const heart=document.createElement("div");
   heart.className="heart";
