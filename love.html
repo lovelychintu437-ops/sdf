@@ -15,7 +15,7 @@ body{
   font-family:'Segoe UI',sans-serif;
   color:white;
   text-align:center;
-  overflow:hidden;
+  overflow-x:hidden;
 }
 
 @keyframes gradientMove{
@@ -24,16 +24,16 @@ body{
   100%{background-position:0% 50%}
 }
 
-/* 🔥 HANDS */
+/* 💍 HANDS */
 .hand{
   position:fixed;
-  top:65%;
+  top:50%;
   transform:translateY(-50%);
-  width:220px;
+  width:260px;
   cursor:grab;
-  user-select:none;
   z-index:1000;
   transition:1s;
+  user-select:none;
 }
 
 #maleHand{ left:0; }
@@ -42,11 +42,11 @@ body{
   transform:translateY(-50%) scaleX(-1);
 }
 
-/* CONTENT */
+/* CONTENT — SAME AS YOURS */
 #content{
   display:none;
   max-width:900px;
-  margin:40px auto;
+  margin:140px auto 40px;
   padding:20px;
 }
 
@@ -57,13 +57,13 @@ body{
   min-height:300px;
 }
 
-/* Carousel */
+/* 3D Carousel — SAME */
 .carousel-container{
   display:none;
   margin-top:50px;
   opacity:0;
   transform:translateY(40px);
-  transition:1s;
+  transition:all 1s ease;
 }
 
 .carousel-container.show{
@@ -85,10 +85,11 @@ body{
   aspect-ratio:9/16;
   object-fit:cover;
   border-radius:25px;
-  transition:0.8s;
+  transition:all 0.8s ease;
+  box-shadow:0 25px 50px rgba(0,0,0,0.4);
 }
 
-/* Hearts */
+/* Floating hearts — SAME */
 .heart{
   position:fixed;
   bottom:-20px;
@@ -98,15 +99,16 @@ body{
 }
 
 @keyframes floatUp{
-  to{ transform:translateY(-110vh); }
+  from{transform:translateY(0);}
+  to{transform:translateY(-110vh);}
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔥 HAND IMAGES -->
-<img src="male-hand.png" id="maleHand" class="hand">
+<!-- 💍 HANDS -->
+<img src="male-hand-ring.png" id="maleHand" class="hand">
 <img src="female-hand.png" id="femaleHand" class="hand">
 
 <audio id="music" src="romantic.mp3" loop></audio>
@@ -123,20 +125,20 @@ body{
 const male=document.getElementById("maleHand");
 const female=document.getElementById("femaleHand");
 
-let dragging=false;
-let moved=false;
-
-/* 🔥 Convert right → left for drag */
+/* Convert right → left for dragging */
 window.onload=()=>{
   const r=female.getBoundingClientRect();
   female.style.left=r.left+"px";
   female.style.right="auto";
 };
 
+let dragging=false;
+let moved=false;
+
 /* DRAG START */
-female.addEventListener("pointerdown",()=>{
+female.addEventListener("pointerdown",e=>{
   dragging=true;
-  female.setPointerCapture(event.pointerId);
+  female.setPointerCapture(e.pointerId);
 });
 
 /* DRAG MOVE */
@@ -155,7 +157,7 @@ window.addEventListener("pointermove",e=>{
 /* DRAG END */
 window.addEventListener("pointerup",()=> dragging=false);
 
-/* 🔥 MOVE BOTH HANDS TO CENTER */
+/* 💖 MOVE BOTH TO CENTER */
 function moveHands(){
 
   if(moved) return;
@@ -163,22 +165,15 @@ function moveHands(){
 
   const center=window.innerWidth/2;
 
-  male.style.left=(center - male.offsetWidth + 25)+"px";
-  female.style.left=(center - 25)+"px";
+  male.style.left=(center - male.offsetWidth + 20)+"px";
+  female.style.left=(center - 20)+"px";
 
   female.style.zIndex="1001";
 
-  setTimeout(startLove,1000);
+  setTimeout(startLove,900);
 }
 
-/* 🔥 YOUR ORIGINAL CONTENT START */
-function startLove(){
-  document.getElementById("content").style.display="block";
-  document.getElementById("music").play().catch(()=>{});
-  typeWriter();
-}
-
-/* ---------- YOUR TEXT ---------- */
+/* ---------- YOUR ORIGINAL CONTENT ---------- */
 
 const text = `Hey Ammaduu❤️
 
@@ -205,14 +200,19 @@ let index=0;
 const typingElement=document.getElementById("typingText");
 const track=document.getElementById("track");
 
-/* LOAD PHOTOS */
+/* Load photos */
 for(let j=1;j<=30;j++){
   const img=document.createElement("img");
   img.src="pic"+j+".jpg";
   track.appendChild(img);
 }
 
-/* TYPEWRITER */
+function startLove(){
+  document.getElementById("content").style.display="block";
+  document.getElementById("music").play().catch(()=>{});
+  typeWriter();
+}
+
 function typeWriter(){
   if(i<text.length){
     typingElement.innerHTML+=text.charAt(i);
@@ -223,52 +223,60 @@ function typeWriter(){
   }
 }
 
-/* CAROUSEL */
 function showCarousel(){
-  const c=document.getElementById("carousel");
-  c.classList.add("show");
+  const carousel=document.getElementById("carousel");
+  carousel.classList.add("show");
   updateCarousel();
+
   setInterval(()=>{
-    index=(index+1)%30;
+    index++;
+    if(index>29) index=0;
     updateCarousel();
   },3000);
 }
 
 function updateCarousel(){
-  const imgs=track.children;
+  const images=track.children;
 
-  for(let k=0;k<imgs.length;k++){
-    let o=k-index;
+  for(let k=0;k<images.length;k++){
+    let offset=k-index;
 
-    if(o===0){
-      imgs[k].style.transform="translateX(-50%) scale(1.2)";
-      imgs[k].style.opacity="1";
-      imgs[k].style.zIndex="5";
+    if(offset===0){
+      images[k].style.transform="translateX(-50%) scale(1.2)";
+      images[k].style.opacity="1";
+      images[k].style.zIndex="5";
+      images[k].style.filter="blur(0px)";
     }
-    else if(o===-1){
-      imgs[k].style.transform="translateX(-180%) scale(0.8)";
-      imgs[k].style.opacity="0.5";
+    else if(offset===-1){
+      images[k].style.transform="translateX(-180%) scale(0.8)";
+      images[k].style.opacity="0.5";
+      images[k].style.zIndex="3";
+      images[k].style.filter="blur(2px)";
     }
-    else if(o===1){
-      imgs[k].style.transform="translateX(80%) scale(0.8)";
-      imgs[k].style.opacity="0.5";
+    else if(offset===1){
+      images[k].style.transform="translateX(80%) scale(0.8)";
+      images[k].style.opacity="0.5";
+      images[k].style.zIndex="3";
+      images[k].style.filter="blur(2px)";
     }
     else{
-      imgs[k].style.opacity="0";
+      images[k].style.transform="translateX(-50%) scale(0.6)";
+      images[k].style.opacity="0";
+      images[k].style.zIndex="1";
     }
   }
 }
 
-/* FLOATING HEARTS */
+/* Floating Hearts */
 setInterval(()=>{
-  const h=document.createElement("div");
-  h.className="heart";
-  h.innerHTML="❤️";
-  h.style.left=Math.random()*100+"vw";
-  document.body.appendChild(h);
-  setTimeout(()=>h.remove(),6000);
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerHTML="❤️";
+  heart.style.left=Math.random()*100+"vw";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),6000);
 },500);
-
 </script>
+
 </body>
 </html>
