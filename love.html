@@ -1,292 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Love You ❤️</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love</title>
 
 <style>
 body{
   margin:0;
-  min-height:100vh;
-  background: linear-gradient(-45deg,#ff758c,#ff7eb3,#ff9a9e,#fad0c4);
-  background-size:400% 400%;
-  animation:gradientMove 12s ease infinite;
-  font-family:'Segoe UI',sans-serif;
-  color:white;
-  text-align:center;
-  overflow-x:hidden;
+  overflow:hidden;
+  background: linear-gradient(#f48fb1,#ec407a);
+  height:100vh;
+  font-family: sans-serif;
 }
 
-@keyframes gradientMove{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
+/* ❤️ Floating hearts */
+.heart{
+  position:absolute;
+  color:#ff1744;
+  animation: float 6s linear infinite;
+  font-size:20px;
 }
 
-/* HANDS */
+@keyframes float{
+  from{transform:translateY(100vh);}
+  to{transform:translateY(-10vh);}
+}
+
+/* 🖐 Hands */
 .hand{
-  position:fixed;
-  bottom:40px;
-  width:45vw;
-  max-width:260px;
+  position:absolute;
+  bottom:60px;
+  width:170px;
   user-select:none;
+  -webkit-user-drag:none;
   touch-action:none;
-  z-index:10;
-  transition:1s;
 }
 
+/* 👈 Female hand LEFT side facing RIGHT */
+#female{
+  right:0;
+}
+
+/* 👉 Male hand RIGHT side */
 #male{
   left:0;
 }
 
-#female{
-  right:0;
-  transform: scaleX(-1); /* 👉 make hand face left 👈 */
-}
-
-/* CONTENT */
-#content{
-  display:none;
-  max-width:900px;
-  margin:120px auto 40px;
-  padding:20px;
-}
-
-#typingText{
-  font-size:1.2em;
-  line-height:1.9;
-  white-space:pre-line;
-  min-height:300px;
-}
-
-/* Carousel */
-.carousel-container{
-  display:none;
-  margin-top:50px;
-  opacity:0;
-  transform:translateY(40px);
-  transition:all 1s ease;
-}
-
-.carousel-container.show{
-  display:block;
-  opacity:1;
-  transform:translateY(0);
-}
-
-.carousel-track{
-  position:relative;
-  height:420px;
-}
-
-.carousel-track img{
+/* 💌 Text */
+#loveText{
   position:absolute;
-  top:0;
-  left:50%;
-  width:260px;
-  aspect-ratio:9/16;
-  object-fit:cover;
-  border-radius:25px;
-  transition:all 0.8s ease;
-  box-shadow:0 25px 50px rgba(0,0,0,0.4);
+  top:25%;
+  width:100%;
+  text-align:center;
+  color:white;
+  font-size:22px;
+  opacity:0;
+  transition:1s;
 }
 
-/* Floating hearts */
-.heart{
-  position:fixed;
-  bottom:-20px;
-  font-size:20px;
-  animation:floatUp 6s linear infinite;
-  opacity:0.7;
-}
-
-@keyframes floatUp{
-  from{transform:translateY(0);}
-  to{transform:translateY(-110vh);}
-}
 </style>
 </head>
 
 <body>
 
-<!-- HANDS -->
+<!-- ❤️ Hearts -->
+<script>
+for(let i=0;i<25;i++){
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="❤";
+  h.style.left=Math.random()*100+"%";
+  h.style.animationDuration=(4+Math.random()*4)+"s";
+  document.body.appendChild(h);
+}
+</script>
+
+<!-- 💌 TEXT -->
+<div id="loveText">
+  ❤️ Hey Ammadu ❤️ <br><br>
+  On 22nd June 2022... <br>
+  The first time I saw you 💖
+</div>
+
+<!-- 🎵 SONG -->
+<audio id="song" src="romantic.mp3"></audio>
+
+<!-- 🖐 MALE HAND -->
 <img id="male" class="hand" src="male-hand-ring.png">
+
+<!-- 🖐 FEMALE HAND 👈 (AUTO FLIPPED) -->
 <img id="female" class="hand" src="female-hand.png">
 
-<audio id="music" src="romantic.mp3" loop></audio>
-
-<div id="content">
-<div id="typingText"></div>
-
-<div class="carousel-container" id="carousel">
-  <div class="carousel-track" id="track"></div>
-</div>
-</div>
-
 <script>
-const male=document.getElementById("male");
-const female=document.getElementById("female");
-let dragging=false;
-let startX=0;
 
-/* DRAG FEMALE HAND */
-female.addEventListener("pointerdown",e=>{
+const female = document.getElementById("female");
+const male   = document.getElementById("male");
+const song   = document.getElementById("song");
+const text   = document.getElementById("loveText");
+
+let dragging=false;
+let moved=false;
+
+/* 💥 FORCE FEMALE HAND 👈 */
+female.style.transform = "rotateY(180deg)";
+
+/* 👉 DRAG START */
+female.addEventListener("pointerdown", ()=>{
   dragging=true;
-  startX=e.clientX;
-  female.setPointerCapture(e.pointerId);
 });
 
-female.addEventListener("pointermove",e=>{
+/* 👉 DRAG MOVE */
+window.addEventListener("pointermove", e=>{
   if(!dragging) return;
 
-  const dx=e.clientX-startX;
-  if(dx<0){
-    female.style.right=(-dx)+"px";
-  }
+  let x = e.clientX;
 
-  /* If moved enough → bring both hands to center */
-  if(dx<-150){
+  /* Move from right side */
+  female.style.right = (window.innerWidth - x - female.offsetWidth/2) + "px";
+
+  /* If near center → trigger */
+  if(x < window.innerWidth/2 + 30){
     dragging=false;
     moveHandsToCenter();
   }
 });
 
-female.addEventListener("pointerup",()=>dragging=false);
+/* 👉 RELEASE */
+window.addEventListener("pointerup", ()=> dragging=false);
 
-/* MOVE HANDS TO CENTER */
+
+/* 💖 MOVE BOTH HANDS TOGETHER */
 function moveHandsToCenter(){
 
-  const center=window.innerWidth/2;
+  if(moved) return;
+  moved=true;
 
-  male.style.left=(center-male.offsetWidth+20)+"px";
-  female.style.left=(center-20)+"px";
-  female.style.right="auto";
+  const center = window.innerWidth/2;
 
-  female.style.zIndex="11";
+  male.style.transition="1s";
+  female.style.transition="1s";
+
+  male.style.left = (center - male.offsetWidth) + "px";
+  female.style.right = (center - female.offsetWidth) + "px";
 
   setTimeout(()=>{
-    disappearHands();
-    startLove();
+    triggerLove();
   },1000);
 }
 
-/* DISAPPEAR HANDS */
-function disappearHands(){
-  male.style.opacity="0";
-  female.style.opacity="0";
 
-  setTimeout(()=>{
-    male.style.display="none";
-    female.style.display="none";
-  },800);
+/* 💍 AFTER MEETING */
+function triggerLove(){
+
+  song.play();
+
+  /* ✨ Show text */
+  text.style.opacity=1;
+
+  /* 💨 Hands disappear */
+  male.style.opacity=0;
+  female.style.opacity=0;
 }
-
-/* ========================= */
-/* YOUR ORIGINAL CONTENT */
-/* ========================= */
-
-const text = `Hey Ammaduu❤️
-
-On 22nd June 2022-
-the first time I saw you on your birthday, in that purple dress. 
-That was the day I fell in love with you 💜
-
-Every moment with you makes me happy.
-
-When I'm sad or happy, you're the one I want to share everything
-
-Through all 4 years of BTech and still, I loved you quietly🫣.
-
-But after you went abroad, I started missing you a lot, 
-and even our calls and messages became less
-
-On this Valentine's Day, you said yes to me💘
-
-Love You Ammaduu😘`;
-
-let i=0;
-let index=0;
-let autoSlide;
-
-const typingElement=document.getElementById("typingText");
-const track=document.getElementById("track");
-
-/* Load photos */
-for(let j=1;j<=30;j++){
-  const img=document.createElement("img");
-  img.src="pic"+j+".jpg";
-  track.appendChild(img);
-}
-
-/* START LOVE CONTENT */
-function startLove(){
-  document.getElementById("content").style.display="block";
-  document.getElementById("music").play().catch(()=>{});
-  typeWriter();
-}
-
-function typeWriter(){
-  if(i<text.length){
-    typingElement.innerHTML+=text.charAt(i);
-    i++;
-    setTimeout(typeWriter,40);
-  }else{
-    showCarousel();
-  }
-}
-
-function showCarousel(){
-  const carousel=document.getElementById("carousel");
-  carousel.classList.add("show");
-  updateCarousel();
-  startAutoSlide();
-}
-
-function startAutoSlide(){
-  autoSlide=setInterval(()=>{
-    index++;
-    if(index>29) index=0;
-    updateCarousel();
-  },3000);
-}
-
-function updateCarousel(){
-  const images=track.children;
-
-  for(let k=0;k<images.length;k++){
-    let offset=k-index;
-
-    if(offset===0){
-      images[k].style.transform="translateX(-50%) scale(1.2)";
-      images[k].style.opacity="1";
-      images[k].style.zIndex="5";
-    }
-    else if(offset===-1){
-      images[k].style.transform="translateX(-180%) scale(0.8)";
-      images[k].style.opacity="0.5";
-      images[k].style.zIndex="3";
-    }
-    else if(offset===1){
-      images[k].style.transform="translateX(80%) scale(0.8)";
-      images[k].style.opacity="0.5";
-      images[k].style.zIndex="3";
-    }
-    else{
-      images[k].style.opacity="0";
-    }
-  }
-}
-
-/* Floating hearts */
-setInterval(()=>{
-  const heart=document.createElement("div");
-  heart.className="heart";
-  heart.innerHTML="❤️";
-  heart.style.left=Math.random()*100+"vw";
-  document.body.appendChild(heart);
-  setTimeout(()=>heart.remove(),6000);
-},500);
 
 </script>
 
