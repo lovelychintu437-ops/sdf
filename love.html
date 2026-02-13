@@ -1,168 +1,310 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
+<title>Love You ❤️</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love</title>
 
 <style>
 body{
   margin:0;
-  overflow:hidden;
-  background: linear-gradient(#f48fb1,#ec407a);
+  min-height:100vh;
+  background: linear-gradient(-45deg,#ff758c,#ff7eb3,#ff9a9e,#fad0c4);
+  background-size:400% 400%;
+  animation:gradientMove 12s ease infinite;
+  font-family:'Segoe UI',sans-serif;
+  color:white;
+  text-align:center;
+  overflow-x:hidden;
+}
+
+@keyframes gradientMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* 🖐 HANDS AREA */
+#engagementArea{
+  position:fixed;
+  width:100%;
   height:100vh;
-  font-family: sans-serif;
+  top:0;
+  left:0;
+  z-index:1000;
+}
+
+/* 👉 Male hand (LEFT) */
+#maleHand{
+  position:fixed;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:260px;
+  pointer-events:none;
+}
+
+/* 👈 Female hand (RIGHT) */
+#femaleHand{
+  position:fixed;
+  right:0;
+  top:50%;
+  transform:translateY(-50%) rotateY(180deg);
+  width:260px;
+  cursor:grab;
+  touch-action:none;
+  z-index:1001;
+}
+
+@media(max-width:768px){
+  #maleHand,#femaleHand{
+    width:180px;
+  }
+}
+
+/* ===== YOUR ORIGINAL CONTENT ===== */
+
+#content{
+  display:none;
+  max-width:900px;
+  margin:140px auto 40px;
+  padding:20px;
+}
+
+#typingText{
+  font-size:1.2em;
+  line-height:1.9;
+  white-space:pre-line;
+  min-height:300px;
+}
+
+.carousel-container{
+  display:none;
+  margin-top:50px;
+  opacity:0;
+  transform:translateY(40px);
+  transition:all 1s ease;
+}
+
+.carousel-container.show{
+  display:block;
+  opacity:1;
+  transform:translateY(0);
+}
+
+.carousel-track{
+  position:relative;
+  height:420px;
+}
+
+.carousel-track img{
+  position:absolute;
+  top:0;
+  left:50%;
+  width:260px;
+  aspect-ratio:9/16;
+  object-fit:cover;
+  border-radius:25px;
+  transition:all 0.8s ease;
+  box-shadow:0 25px 50px rgba(0,0,0,0.4);
+}
+
+@media(max-width:768px){
+  .carousel-track{
+    height:340px;
+  }
+  .carousel-track img{
+    width:200px;
+  }
 }
 
 /* ❤️ Floating hearts */
 .heart{
-  position:absolute;
-  color:#ff1744;
-  animation: float 6s linear infinite;
+  position:fixed;
+  bottom:-20px;
   font-size:20px;
+  animation:floatUp 6s linear infinite;
+  opacity:0.7;
 }
 
-@keyframes float{
-  from{transform:translateY(100vh);}
-  to{transform:translateY(-10vh);}
+@keyframes floatUp{
+  from{transform:translateY(0);}
+  to{transform:translateY(-110vh);}
 }
-
-/* 🖐 Hands */
-.hand{
-  position:absolute;
-  bottom:60px;
-  width:170px;
-  user-select:none;
-  -webkit-user-drag:none;
-  touch-action:none;
-}
-
-/* 👈 Female hand LEFT side facing RIGHT */
-#female{
-  right:0;
-}
-
-/* 👉 Male hand RIGHT side */
-#male{
-  left:0;
-}
-
-/* 💌 Text */
-#loveText{
-  position:absolute;
-  top:25%;
-  width:100%;
-  text-align:center;
-  color:white;
-  font-size:22px;
-  opacity:0;
-  transition:1s;
-}
-
 </style>
 </head>
 
 <body>
 
-<!-- ❤️ Hearts -->
-<script>
-for(let i=0;i<25;i++){
-  const h=document.createElement("div");
-  h.className="heart";
-  h.innerHTML="❤";
-  h.style.left=Math.random()*100+"%";
-  h.style.animationDuration=(4+Math.random()*4)+"s";
-  document.body.appendChild(h);
-}
-</script>
-
-<!-- 💌 TEXT -->
-<div id="loveText">
-  ❤️ Hey Ammadu ❤️ <br><br>
-  On 22nd June 2022... <br>
-  The first time I saw you 💖
+<!-- 🖐 HANDS -->
+<div id="engagementArea">
+  <img src="male-hand-ring.png" id="maleHand">
+  <img src="female-hand.png" id="femaleHand">
 </div>
 
-<!-- 🎵 SONG -->
-<audio id="song" src="romantic.mp3"></audio>
+<audio id="music" src="romantic.mp3" loop></audio>
 
-<!-- 🖐 MALE HAND -->
-<img id="male" class="hand" src="male-hand-ring.png">
+<div id="content">
+<div id="typingText"></div>
 
-<!-- 🖐 FEMALE HAND 👈 (AUTO FLIPPED) -->
-<img id="female" class="hand" src="female-hand.png">
+<div class="carousel-container" id="carousel">
+  <div class="carousel-track" id="track"></div>
+</div>
+</div>
 
 <script>
+const text = `Hey Ammaduu❤️
 
-const female = document.getElementById("female");
-const male   = document.getElementById("male");
-const song   = document.getElementById("song");
-const text   = document.getElementById("loveText");
+On 22nd June 2022-
+the first time I saw you on your birthday, in that purple dress. 
+That was the day I fell in love with you 💜
+
+Every moment with you makes me happy.
+
+When I'm sad or happy, you're the one I want to share everything
+
+Through all 4 years of BTech and still, I loved you quietly🫣.
+
+But after you went abroad, I started missing you a lot, 
+and even our calls and messages became less
+
+On this Valentine's Day, you said yes to me💘
+
+Love You Ammaduu😘`;
+
+let i=0;
+let index=0;
+let autoSlide;
+
+const typingElement=document.getElementById("typingText");
+const track=document.getElementById("track");
+const male=document.getElementById("maleHand");
+const female=document.getElementById("femaleHand");
+const engagementArea=document.getElementById("engagementArea");
+
+/* Load photos */
+for(let j=1;j<=30;j++){
+  const img=document.createElement("img");
+  img.src="pic"+j+".jpg";
+  track.appendChild(img);
+}
+
+/* ===== DRAG SYSTEM ===== */
 
 let dragging=false;
-let moved=false;
 
-/* 💥 FORCE FEMALE HAND 👈 */
-female.style.transform = "rotateY(180deg)";
+female.addEventListener("pointerdown",()=>dragging=true);
+window.addEventListener("pointerup",()=>dragging=false);
 
-/* 👉 DRAG START */
-female.addEventListener("pointerdown", ()=>{
-  dragging=true;
-});
-
-/* 👉 DRAG MOVE */
-window.addEventListener("pointermove", e=>{
+window.addEventListener("pointermove",e=>{
   if(!dragging) return;
 
-  let x = e.clientX;
+  const x=e.clientX;
 
-  /* Move from right side */
-  female.style.right = (window.innerWidth - x - female.offsetWidth/2) + "px";
+  female.style.right=(window.innerWidth-x-female.offsetWidth/2)+"px";
 
-  /* If near center → trigger */
-  if(x < window.innerWidth/2 + 30){
+  if(x < window.innerWidth/2 + 40){
     dragging=false;
     moveHandsToCenter();
   }
 });
 
-/* 👉 RELEASE */
-window.addEventListener("pointerup", ()=> dragging=false);
+/* ===== MOVE TO CENTER ===== */
 
+let moved=false;
 
-/* 💖 MOVE BOTH HANDS TOGETHER */
 function moveHandsToCenter(){
-
   if(moved) return;
   moved=true;
 
-  const center = window.innerWidth/2;
+  const center=window.innerWidth/2;
 
   male.style.transition="1s";
   female.style.transition="1s";
 
-  male.style.left = (center - male.offsetWidth) + "px";
-  female.style.right = (center - female.offsetWidth) + "px";
+  male.style.left=(center-male.offsetWidth)+"px";
+  female.style.right=(center-female.offsetWidth)+"px";
 
   setTimeout(()=>{
-    triggerLove();
+    engagementArea.style.display="none";
+    startLove();
   },1000);
 }
 
+/* ===== LOVE FLOW (UNCHANGED) ===== */
 
-/* 💍 AFTER MEETING */
-function triggerLove(){
-
-  song.play();
-
-  /* ✨ Show text */
-  text.style.opacity=1;
-
-  /* 💨 Hands disappear */
-  male.style.opacity=0;
-  female.style.opacity=0;
+function startLove(){
+  document.getElementById("content").style.display="block";
+  document.getElementById("music").play().catch(()=>{});
+  typeWriter();
 }
 
+function typeWriter(){
+  if(i<text.length){
+    typingElement.innerHTML+=text.charAt(i);
+    i++;
+    setTimeout(typeWriter,40);
+  }else{
+    showCarousel();
+  }
+}
+
+function showCarousel(){
+  const carousel=document.getElementById("carousel");
+  carousel.classList.add("show");
+  updateCarousel();
+  startAutoSlide();
+}
+
+function startAutoSlide(){
+  autoSlide=setInterval(()=>{
+    index++;
+    if(index>29) index=0;
+    updateCarousel();
+  },3000);
+}
+
+function updateCarousel(){
+  const images=track.children;
+
+  for(let k=0;k<images.length;k++){
+    let offset=k-index;
+
+    if(offset===0){
+      images[k].style.transform="translateX(-50%) scale(1.2)";
+      images[k].style.opacity="1";
+      images[k].style.zIndex="5";
+      images[k].style.filter="blur(0px)";
+    }
+    else if(offset===-1){
+      images[k].style.transform="translateX(-180%) scale(0.8)";
+      images[k].style.opacity="0.5";
+      images[k].style.zIndex="3";
+      images[k].style.filter="blur(2px)";
+    }
+    else if(offset===1){
+      images[k].style.transform="translateX(80%) scale(0.8)";
+      images[k].style.opacity="0.5";
+      images[k].style.zIndex="3";
+      images[k].style.filter="blur(2px)";
+    }
+    else{
+      images[k].style.transform="translateX(-50%) scale(0.6)";
+      images[k].style.opacity="0";
+      images[k].style.zIndex="1";
+    }
+  }
+}
+
+/* Floating Hearts */
+setInterval(()=>{
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerHTML="❤️";
+  heart.style.left=Math.random()*100+"vw";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),6000);
+},500);
 </script>
 
 </body>
