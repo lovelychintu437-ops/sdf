@@ -44,12 +44,12 @@ body{
   pointer-events:none;
 }
 
-/* 👈 Female hand (RIGHT) */
+/* 👈 Female hand (RIGHT, now faces left) */
 #femaleHand{
   position:fixed;
   left:calc(100% - 260px);
   top:50%;
-  transform:translateY(-50%) rotateY(180deg);
+  transform:translateY(-50%); /* remove rotateY */
   width:260px;
   cursor:grab;
   touch-action:none;
@@ -190,7 +190,7 @@ for(let j=1;j<=30;j++){
   track.appendChild(img);
 }
 
-/* ===== DRAG SYSTEM (Desktop + Mobile FIXED) ===== */
+/* ===== DRAG SYSTEM (Desktop + Mobile) ===== */
 let dragging=false;
 let moved=false;
 let startX=0;
@@ -221,7 +221,7 @@ window.addEventListener("pointermove",(e)=>{
 
   female.style.left = newLeft + "px";
   female.style.top = "50%";
-  female.style.transform = "translateY(-50%) rotateY(180deg)";
+  female.style.transform = "translateY(-50%)"; // no rotate
 
   /* Check if female hand reached center */
   const center = window.innerWidth / 2;
