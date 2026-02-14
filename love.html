@@ -5,6 +5,9 @@
 <title>Love You ❤️</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
 <style>
 body{
   margin:0;
@@ -16,7 +19,6 @@ body{
   color:white;
   text-align:center;
   overflow-x:hidden;
-  position:relative;
 }
 
 @keyframes gradientMove{
@@ -25,54 +27,63 @@ body{
   100%{background-position:0% 50%}
 }
 
-/* Bouncing Heart */
-#bouncingHeart{
+/* Center Heart */
+#envelope{
   position:fixed;
   top:50%;
   left:50%;
   transform:translate(-50%, -50%);
-  font-size:80px;
+  font-size:90px;
   cursor:pointer;
-  animation:bounce 1s infinite;
-  z-index:2000;
-  pointer-events:auto;
+  animation:heartbeat 1.5s infinite;
+  z-index:1000;
+  text-shadow: 0 0 15px #ff5c8d, 0 0 30px #ff5c8d, 0 0 45px #ff5c8d, 0 0 60px #ff5c8d;
 }
 
-@keyframes bounce{
-  0%,100%{transform:translate(-50%,-50%) scale(1);}
-  50%{transform:translate(-50%,-50%) scale(1.2);}
+@keyframes heartbeat{
+  0%   { transform: translate(-50%, -50%) scale(1); }
+  25%  { transform: translate(-50%, -52%) scale(1.2); }
+  50%  { transform: translate(-50%, -50%) scale(1); }
+  75%  { transform: translate(-50%, -48%) scale(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1); }
 }
 
-/* Pre-hand text */
-#preHandText{
+/* Pre-Hand Text */
+#preText{
   position:fixed;
   top:50%;
   left:50%;
   transform:translate(-50%, -50%);
-  font-size:1.5em;
-  text-align:center;
+  font-family: 'Dancing Script', cursive;
+  font-weight:700;
+  font-size:2em;
+  color:#fff0f5;
+  text-shadow: 0 0 10px #ffc0cb, 0 0 20px #ffc0cb, 0 0 30px #ffc0cb;
   opacity:0;
-  transition:all 1s ease;
-  z-index:1500;
-  max-width:80%;
+  transition: all 1s ease;
+  z-index:999;
 }
 
 /* Hands */
 .hand{
   position:fixed;
-  width:100px;
-  aspect-ratio:1/1;
-  bottom:10%;
-  cursor:pointer;
-  z-index:1500;
-  user-select:none;
-  touch-action:none;
+  top:50%;
+  width:120px;
+  height:auto;
+  transform:translateY(-50%);
+  transition: all 2s ease-in-out;
+  z-index:1000;
 }
 
-#femaleHand{right:25%; display:none;}
-#maleHand{left:25%; display:none;}
+#maleHand{
+  left:20%;
+}
 
-/* Original content */
+#femaleHand{
+  right:20%;
+}
+
+/* Content & Typing */
 #content{
   display:none;
   max-width:900px;
@@ -87,7 +98,7 @@ body{
   min-height:300px;
 }
 
-/* Center 3D Carousel */
+/* 3D Carousel */
 .carousel-container{
   display:none;
   margin-top:50px;
@@ -128,7 +139,7 @@ body{
   }
 }
 
-/* Floating hearts */
+/* Floating Hearts */
 .heart{
   position:fixed;
   bottom:-20px;
@@ -146,21 +157,21 @@ body{
 
 <body>
 
-<!-- Bouncing Heart -->
-<div id="bouncingHeart">❤️</div>
+<!-- Center Heart -->
+<div id="envelope" onclick="startLove()">❤️</div>
+
+<!-- Pre-Hand Text -->
+<div id="preText">Ammadu, will you hold my hand forever?<br>Let's get married</div>
+
+<!-- Hands -->
+<img id="maleHand" class="hand" src="male-hand-ring.png" alt="Male Hand">
+<img id="femaleHand" class="hand" src="female-hand.png" alt="Female Hand">
 
 <audio id="music" src="romantic.mp3" loop></audio>
 
-<!-- Pre-hand text -->
-<div id="preHandText">Ammadu will you hold my hand forever?<br>Let's get married</div>
-
-<!-- Draggable hands -->
-<img src="female-hand.png" id="femaleHand" class="hand">
-<img src="male-hand-ring.png" id="maleHand" class="hand">
-
-<!-- Original content -->
 <div id="content">
   <div id="typingText"></div>
+
   <div class="carousel-container" id="carousel">
     <div class="carousel-track" id="track"></div>
   </div>
@@ -192,86 +203,48 @@ let autoSlide;
 
 const typingElement=document.getElementById("typingText");
 const track=document.getElementById("track");
+const preText=document.getElementById("preText");
+const maleHand=document.getElementById("maleHand");
+const femaleHand=document.getElementById("femaleHand");
 
-const bouncingHeart = document.getElementById("bouncingHeart");
-const preHandText = document.getElementById("preHandText");
-const femaleHand = document.getElementById("femaleHand");
-const maleHand = document.getElementById("maleHand");
-
-/* Load 30 photos */
+/* Load 30 photos dynamically */
 for(let j=1;j<=30;j++){
   const img=document.createElement("img");
   img.src="pic"+j+".jpg";
   track.appendChild(img);
 }
 
-/* Heart click */
-bouncingHeart.addEventListener('click', ()=>{
-  bouncingHeart.remove();
+/* Start Love Process */
+function startLove(){
+  document.getElementById("envelope").style.display="none";
   document.getElementById("music").play().catch(()=>{});
-  preHandText.style.opacity = "1";
+  
+  // Show Pre-Hand Text
+  preText.style.opacity = "1";
+  
+  // Start hands animation after small delay
+  setTimeout(()=>animateHands(), 1000);
+}
 
-  // Show hands after 3s and move text up
+/* Animate Hands */
+function animateHands(){
+  // Female moves to center
+  femaleHand.style.right = "50%";
+  femaleHand.style.transform = "translate(50%, -50%)";
+  
+  // Male moves to center in sync
+  maleHand.style.left = "50%";
+  maleHand.style.transform = "translate(-50%, -50%)";
+  
+  // After hands overlap (~2s), hide pre-text & start typing
   setTimeout(()=>{
-    preHandText.style.top = "30%";
-    femaleHand.style.display = "block";
-    maleHand.style.display = "block";
+    preText.style.opacity = "0";
+    startTyping();
+  }, 2000);
+}
 
-    // Initialize male hand positions
-    maleHand.style.left = '25%';
-    maleHand.style.top = '70%';
-    femaleHand.style.right = '25%';
-    femaleHand.style.top = '70%';
-  },3000);
-});
-
-/* Dragging female hand */
-let isDragging = false;
-let offsetX=0, offsetY=0;
-
-femaleHand.addEventListener('pointerdown', (e)=>{
-  isDragging = true;
-  offsetX = e.clientX - femaleHand.offsetLeft;
-  offsetY = e.clientY - femaleHand.offsetTop;
-  femaleHand.setPointerCapture(e.pointerId);
-});
-
-femaleHand.addEventListener('pointermove', (e)=>{
-  if(!isDragging) return;
-
-  // Move female hand
-  let newX = e.clientX - offsetX;
-  let newY = e.clientY - offsetY;
-  femaleHand.style.left = newX + 'px';
-  femaleHand.style.top = newY + 'px';
-
-  // Move male hand automatically toward female
-  let maleRect = maleHand.getBoundingClientRect();
-  let femaleRect = femaleHand.getBoundingClientRect();
-
-  let maleX = maleRect.left + window.scrollX;
-  let maleY = maleRect.top + window.scrollY;
-  let targetX = femaleRect.left - 150;
-  let targetY = femaleRect.top;
-
-  maleHand.style.left = maleX + (targetX - maleX)*0.1 + 'px';
-  maleHand.style.top  = maleY + (targetY - maleY)*0.1 + 'px';
-
-  // Check for overlap
-  if(Math.abs(femaleRect.left - maleRect.left)<20 && Math.abs(femaleRect.top - maleRect.top)<20){
-    femaleHand.style.display = "none";
-    maleHand.style.display = "none";
-    startOriginalLove();
-  }
-});
-
-femaleHand.addEventListener('pointerup', (e)=>{
-  isDragging = false;
-  femaleHand.releasePointerCapture(e.pointerId);
-});
-
-/* Original content */
-function startOriginalLove(){
+/* Typing Effect */
+function startTyping(){
   document.getElementById("content").style.display="block";
   typeWriter();
 }
@@ -286,6 +259,7 @@ function typeWriter(){
   }
 }
 
+/* Carousel Functions */
 function showCarousel(){
   const carousel=document.getElementById("carousel");
   carousel.classList.add("show");
@@ -305,6 +279,7 @@ function updateCarousel(){
   const images=track.children;
   for(let k=0;k<images.length;k++){
     let offset=k-index;
+
     if(offset===0){
       images[k].style.transform="translateX(-50%) scale(1.2)";
       images[k].style.opacity="1";
@@ -340,7 +315,7 @@ setInterval(()=>{
   document.body.appendChild(heart);
   setTimeout(()=>heart.remove(),6000);
 },500);
-</script>
 
+</script>
 </body>
 </html>
