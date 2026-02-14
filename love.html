@@ -205,22 +205,28 @@ for(let j=1;j<=30;j++){
   track.appendChild(img);
 }
 
-/* Heart click sequence */
-bouncingHeart.addEventListener('click',()=>{
+/* Heart click sequence - fixed disappearing */
+bouncingHeart.addEventListener('click', ()=>{
+  // Hide heart immediately
+  bouncingHeart.style.display = "none";
+
+  // Play music
   document.getElementById("music").play().catch(()=>{});
-  bouncingHeart.style.display="none";
-  preHandText.style.opacity="1";
+
+  // Show pre-hand text
+  preHandText.style.opacity = "1";
 
   // Move pre-hand text above hands after 3s and show hands
   setTimeout(()=>{
-    preHandText.style.top="30%";
-    femaleHand.style.display="block";
-    maleHand.style.display="block";
-    // Initialize male hand position if not set
+    preHandText.style.top = "30%";
+    femaleHand.style.display = "block";
+    maleHand.style.display = "block";
+
+    // Initialize male/female hand positions if not set
     if(!maleHand.style.left) maleHand.style.left = window.innerWidth*0.75 + 'px';
     if(!maleHand.style.top) maleHand.style.top = window.innerHeight*0.9 + 'px';
     if(!femaleHand.style.top) femaleHand.style.top = window.innerHeight*0.9 + 'px';
-  },3000);
+  }, 3000);
 });
 
 /* Dragging female hand with male hand following */
