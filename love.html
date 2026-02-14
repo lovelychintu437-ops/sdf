@@ -16,6 +16,7 @@ body{
   color:white;
   text-align:center;
   overflow-x:hidden;
+  position:relative;
 }
 
 @keyframes gradientMove{
@@ -24,45 +25,53 @@ body{
   100%{background-position:0% 50%}
 }
 
-/* 🖐 HANDS AREA */
-#engagementArea{
+/* Bouncing Heart */
+#bouncingHeart{
   position:fixed;
-  width:100%;
-  height:100vh;
-  top:0;
-  left:0;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  font-size:80px;
+  cursor:pointer;
+  animation:bounce 1s infinite;
   z-index:1000;
 }
 
-/* 👉 Male hand (LEFT) */
-#maleHand{
-  position:fixed;
-  left:0;
-  top:50%;
-  transform:translateY(-50%);
-  width:260px;
-  pointer-events:none;
+@keyframes bounce{
+  0%,100%{transform:translate(-50%,-50%) scale(1);}
+  50%{transform:translate(-50%,-50%) scale(1.2);}
 }
 
-/* 👈 Female hand (RIGHT, now faces left) */
-#femaleHand{
+/* Pre-hand text */
+#preHandText{
   position:fixed;
-  left:calc(100% - 260px);
   top:50%;
-  transform:translateY(-50%); /* remove rotateY */
-  width:260px;
-  cursor:grab;
+  left:50%;
+  transform:translate(-50%, -50%);
+  font-size:1.5em;
+  text-align:center;
+  opacity:0;
+  transition:all 1s ease;
+  z-index:1000;
+  max-width:80%;
+}
+
+/* Hands */
+.hand{
+  position:fixed;
+  width:100px;
+  aspect-ratio:1/1;
+  bottom:10%;
+  cursor:pointer;
+  z-index:1000;
+  user-select:none;
   touch-action:none;
-  z-index:1001;
 }
 
-@media(max-width:768px){
-  #maleHand,#femaleHand{
-    width:180px;
-  }
-}
+#femaleHand{right:25%; display:none;}
+#maleHand{left:25%; display:none;}
 
-/* ===== CONTENT ===== */
+/* Original content */
 #content{
   display:none;
   max-width:900px;
@@ -75,9 +84,9 @@ body{
   line-height:1.9;
   white-space:pre-line;
   min-height:300px;
-  overflow-y:auto;
 }
 
+/* Center 3D Carousel */
 .carousel-container{
   display:none;
   margin-top:50px;
@@ -118,7 +127,7 @@ body{
   }
 }
 
-/* ❤️ Floating hearts */
+/* Floating hearts */
 .heart{
   position:fixed;
   bottom:-20px;
@@ -136,24 +145,29 @@ body{
 
 <body>
 
-<!-- 🖐 HANDS -->
-<div id="engagementArea">
-  <img src="male-hand-ring.png" id="maleHand">
-  <img src="female-hand.png" id="femaleHand">
-</div>
+<!-- Bouncing Heart -->
+<div id="bouncingHeart">❤️</div>
 
 <audio id="music" src="romantic.mp3" loop></audio>
 
-<div id="content">
-<div id="typingText"></div>
+<!-- Pre-hand text -->
+<div id="preHandText">Ammadu will you hold my hand forever?<br>Let's get married</div>
 
-<div class="carousel-container" id="carousel">
-  <div class="carousel-track" id="track"></div>
-</div>
+<!-- Draggable hands -->
+<img src="female-hand.png" id="femaleHand" class="hand">
+<img src="male-hand-ring.png" id="maleHand" class="hand">
+
+<!-- Original content -->
+<div id="content">
+  <div id="typingText"></div>
+
+  <div class="carousel-container" id="carousel">
+    <div class="carousel-track" id="track"></div>
+  </div>
 </div>
 
 <script>
-const text = `Happy valentine's day Ammaduu❤️
+const text = `Hey Ammaduu❤️
 
 On 22nd June 2022-
 the first time I saw you on your birthday, in that purple dress. 
@@ -178,81 +192,79 @@ let autoSlide;
 
 const typingElement=document.getElementById("typingText");
 const track=document.getElementById("track");
-const male=document.getElementById("maleHand");
-const female=document.getElementById("femaleHand");
-const engagementArea=document.getElementById("engagementArea");
-const music=document.getElementById("music");
 
-/* Load photos */
+const bouncingHeart = document.getElementById("bouncingHeart");
+const preHandText = document.getElementById("preHandText");
+const femaleHand = document.getElementById("femaleHand");
+const maleHand = document.getElementById("maleHand");
+
+/* Load 30 photos */
 for(let j=1;j<=30;j++){
   const img=document.createElement("img");
   img.src="pic"+j+".jpg";
   track.appendChild(img);
 }
 
-/* ===== DRAG SYSTEM (Desktop + Mobile) ===== */
-let dragging=false;
-let moved=false;
-let startX=0;
-let startLeft=0;
+/* Heart click sequence - remove heart completely */
+bouncingHeart.addEventListener('click', ()=>{
+  bouncingHeart.remove();
+  document.getElementById("music").play().catch(()=>{});
+  preHandText.style.opacity = "1";
 
-female.addEventListener("pointerdown",(e)=>{
-  dragging=true;
-  startX = e.clientX;
-  startLeft = female.offsetLeft;
-
-  /* 🎵 Play song immediately */
-  music.play().catch(()=>{});
+  // Show hands after 3s and move text up
+  setTimeout(()=>{
+    preHandText.style.top = "30%";
+    femaleHand.style.display = "block";
+    maleHand.style.display = "block";
+  },3000);
 });
 
-window.addEventListener("pointerup",()=>dragging=false);
+/* Dragging female hand */
+let isDragging = false;
+let offsetX=0, offsetY=0;
 
-window.addEventListener("pointermove",(e)=>{
-  if(!dragging) return;
+femaleHand.addEventListener('pointerdown', (e)=>{
+  isDragging = true;
+  offsetX = e.clientX - femaleHand.offsetLeft;
+  offsetY = e.clientY - femaleHand.offsetTop;
+  femaleHand.setPointerCapture(e.pointerId);
+});
 
-  const deltaX = e.clientX - startX;
-  let newLeft = startLeft + deltaX;
+femaleHand.addEventListener('pointermove', (e)=>{
+  if(!isDragging) return;
 
-  /* Constrain within screen */
-  const minLeft = window.innerWidth*0.25;
-  const maxLeft = window.innerWidth - female.offsetWidth - 10;
-  if(newLeft < minLeft) newLeft = minLeft;
-  if(newLeft > maxLeft) newLeft = maxLeft;
+  // Move female hand
+  let newX = e.clientX - offsetX;
+  let newY = e.clientY - offsetY;
+  femaleHand.style.left = newX + 'px';
+  femaleHand.style.top = newY + 'px';
 
-  female.style.left = newLeft + "px";
-  female.style.top = "50%";
-  female.style.transform = "translateY(-50%)"; // no rotate
+  // Male hand moves automatically to overlap
+  let maleX = parseFloat(maleHand.style.left);
+  let maleY = parseFloat(maleHand.style.top);
+  let targetX = newX - 150; // male hand moves toward female
+  let targetY = newY;
+  maleHand.style.left = maleX + (targetX - maleX)*0.1 + 'px';
+  maleHand.style.top  = maleY + (targetY - maleY)*0.1 + 'px';
 
-  /* Check if female hand reached center */
-  const center = window.innerWidth / 2;
-  if(newLeft + female.offsetWidth/2 >= center - 20){
-    dragging=false;
-    moveHandsToCenter();
+  // Check for overlap
+  const fRect = femaleHand.getBoundingClientRect();
+  const mRect = maleHand.getBoundingClientRect();
+  if(Math.abs(fRect.left - mRect.left) < 20 && Math.abs(fRect.top - mRect.top) < 20){
+    // Hands overlap → remove both
+    femaleHand.style.display = "none";
+    maleHand.style.display = "none";
+    startOriginalLove();
   }
 });
 
-/* ===== MOVE HANDS TO CENTER ===== */
-function moveHandsToCenter(){
-  if(moved) return;
-  moved=true;
+femaleHand.addEventListener('pointerup', (e)=>{
+  isDragging = false;
+  femaleHand.releasePointerCapture(e.pointerId);
+});
 
-  const center=window.innerWidth/2;
-
-  male.style.transition="1s";
-  female.style.transition="1s";
-
-  male.style.left=(center-male.offsetWidth)+"px";
-  female.style.left=(center-30)+"px"; // Slight overlap
-
-  /* Hide hands after reaching middle */
-  setTimeout(()=>{
-    engagementArea.style.display="none";
-    startLove();
-  },1000);
-}
-
-/* ===== LOVE CONTENT (with auto-scroll) ===== */
-function startLove(){
+/* Original content functions */
+function startOriginalLove(){
   document.getElementById("content").style.display="block";
   typeWriter();
 }
@@ -261,10 +273,6 @@ function typeWriter(){
   if(i<text.length){
     typingElement.innerHTML+=text.charAt(i);
     i++;
-
-    // Auto-scroll to bottom
-    typingElement.scrollTop = typingElement.scrollHeight;
-
     setTimeout(typeWriter,40);
   }else{
     showCarousel();
@@ -288,10 +296,8 @@ function startAutoSlide(){
 
 function updateCarousel(){
   const images=track.children;
-
   for(let k=0;k<images.length;k++){
     let offset=k-index;
-
     if(offset===0){
       images[k].style.transform="translateX(-50%) scale(1.2)";
       images[k].style.opacity="1";
