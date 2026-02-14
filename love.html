@@ -109,13 +109,14 @@ body{
 #typingText{
   font-size:1.2em;
   line-height:1.9;
-  white-space:pre-line;   /* preserves paragraph breaks */
+  white-space:pre-wrap;   /* preserves \n and wraps naturally */
+  word-wrap: break-word;   /* ensures long words break properly */
   min-height:300px;
-  max-height:60vh;        /* limit for scrolling */
-  overflow-y:auto;        /* allow vertical scroll */
+  max-height:60vh;         /* limit height for scrolling */
+  overflow-y:auto;         /* allow vertical scroll */
   padding:10px;
   box-sizing:border-box;
-  scroll-behavior: smooth;
+  scroll-behavior: smooth; /* smooth auto-scroll while typing */
 }
 
 .carousel-container{
@@ -178,6 +179,10 @@ body{
   }
   #heart{
     font-size:50px;
+  }
+  #typingText{
+    font-size:1em;
+    line-height:1.6;
   }
 }
 </style>
@@ -356,7 +361,7 @@ function triggerHeartExplosion(){
   }
 }
 
-/* ===== LOVE FLOW (UNCHANGED) ===== */
+/* ===== LOVE FLOW ===== */
 function startLove(){
   document.getElementById("content").style.display="block";
   typeWriter();
@@ -428,7 +433,6 @@ setInterval(()=>{
   document.body.appendChild(heart);
   setTimeout(()=>heart.remove(),6000);
 },500);
-
 </script>
 </body>
-</html>
+  </html>
