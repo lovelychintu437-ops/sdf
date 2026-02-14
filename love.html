@@ -27,7 +27,7 @@ body{
   100%{background-position:0% 50%}
 }
 
-/* Pre-Hand Text */
+/* ===== Pre-Hand Text ===== */
 #preText{
   position:fixed;
   top:50%;
@@ -41,28 +41,10 @@ body{
   z-index:2000;
   text-shadow: 2px 2px 10px rgba(255,182,193,0.8);
   line-height:1.3;
-  opacity:0;
-  transition: all 1s ease;
+  transition: all 0.8s ease;
 }
 
-/* Middle Heart */
-#heart{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  font-size:60px;
-  cursor:pointer;
-  animation:bounce 1.5s infinite;
-  z-index:2500;
-}
-
-@keyframes bounce{
-  0%,100%{transform:translate(-50%,-50%) scale(1);}
-  50%{transform:translate(-50%,-50%) scale(1.2);}
-}
-
-/* Hands */
+/* HANDS */
 #engagementArea{
   position:fixed;
   width:100%;
@@ -94,7 +76,7 @@ body{
   z-index:1001;
 }
 
-/* CONTENT */
+/* ===== CONTENT ===== */
 #content{
   display:none;
   max-width:900px;
@@ -109,14 +91,13 @@ body{
 #typingText{
   font-size:1.2em;
   line-height:1.9;
-  white-space:pre-wrap;   /* preserves \n and wraps naturally */
-  word-wrap: break-word;   /* ensures long words break properly */
-  min-height:300px;
-  max-height:60vh;         /* limit height for scrolling */
-  overflow-y:auto;         /* allow vertical scroll */
+  white-space:pre-wrap;      /* preserves paragraphs */
+  word-wrap:break-word;
+  overflow-y:auto;            /* manual scroll */
+  max-height:60vh;
   padding:10px;
   box-sizing:border-box;
-  scroll-behavior: smooth; /* smooth auto-scroll while typing */
+  scroll-behavior:smooth;     /* smooth auto-scroll */
 }
 
 .carousel-container{
@@ -150,7 +131,23 @@ body{
   box-shadow:0 25px 50px rgba(0,0,0,0.4);
 }
 
-/* Floating Hearts */
+@media(max-width:768px){
+  .carousel-track{
+    height:340px;
+  }
+  .carousel-track img{
+    width:200px;
+  }
+  #typingText{
+    font-size:1em;
+    line-height:1.6;
+  }
+  #preText{
+    font-size:1.8em;
+  }
+}
+
+/* ❤️ Floating hearts */
 .heart{
   position:fixed;
   bottom:-20px;
@@ -163,34 +160,10 @@ body{
   from{transform:translateY(0);}
   to{transform:translateY(-110vh);}
 }
-
-@media(max-width:768px){
-  #maleHand,#femaleHand{
-    width:180px;
-  }
-  .carousel-track{
-    height:340px;
-  }
-  .carousel-track img{
-    width:200px;
-  }
-  #preText{
-    font-size:1.8em;
-  }
-  #heart{
-    font-size:50px;
-  }
-  #typingText{
-    font-size:1em;
-    line-height:1.6;
-  }
-}
 </style>
 </head>
-<body>
 
-<!-- Middle Heart -->
-<div id="heart">❤️</div>
+<body>
 
 <!-- Pre-Hand Text -->
 <div id="preText">
@@ -217,7 +190,7 @@ body{
 const text = `Happy valentine's day Ammaduu❤️
 
 On 22nd June 2022-
-the first time I saw you on your birthday, in that purple dress.
+the first time I saw you on your birthday, in that purple dress. 
 That was the day I fell in love with you 💜
 
 Every moment with you makes me happy.
@@ -244,31 +217,19 @@ const female=document.getElementById("femaleHand");
 const engagementArea=document.getElementById("engagementArea");
 const music=document.getElementById("music");
 const preText=document.getElementById("preText");
-const heart=document.getElementById("heart");
 
-/* Load photos */
+/* Load 30 photos */
 for(let j=1;j<=30;j++){
   const img=document.createElement("img");
   img.src="pic"+j+".jpg";
   track.appendChild(img);
 }
 
-/* ===== HEART TAP ===== */
-heart.addEventListener("pointerdown",()=>{
-  heart.style.display="none"; // hide heart after tap
-  music.play().catch(()=>{});
-  
-  // Show pre-hand text middle
-  preText.style.opacity = "1";
-
-  // After 3 seconds, move pre-hand text above hands (triangle)
-  setTimeout(()=>{
-    preText.style.transition = "all 1s ease";
-    preText.style.top = "35%"; // above hands
-    preText.style.transform = "translateX(-50%)";
-    engagementArea.style.display = "block"; // show hands
-  },3000);
-});
+/* ===== Pre-Text scroll animation + show hands ===== */
+setTimeout(()=>{
+  preText.style.transform="translate(-50%, -65%)"; // middle scroll up
+  engagementArea.style.display="block";           // show hands
+},3000); // wait 3 seconds before moving text and showing hands
 
 /* ===== DRAG SYSTEM ===== */
 let dragging=false;
@@ -280,12 +241,8 @@ female.addEventListener("pointerdown",(e)=>{
   dragging=true;
   startX=e.clientX;
   startLeft=female.offsetLeft;
-
-  // hide pre-hand text immediately
-  preText.style.transition="opacity 0.5s ease";
-  preText.style.opacity="0";
-
   music.play().catch(()=>{});
+  preText.style.display="none"; // pre-hand text disappears immediately
 });
 
 window.addEventListener("pointerup",()=>dragging=false);
@@ -327,7 +284,7 @@ function checkHandsOverlap(){
   }
 }
 
-/* ===== MOVE HANDS TO CENTER & START LOVE FLOW ===== */
+/* ===== MOVE HANDS TO CENTER & HIDE PRE-TEXT ===== */
 function moveHandsToCenter(){
   if(moved) return;
   moved=true;
@@ -342,7 +299,7 @@ function moveHandsToCenter(){
 
   setTimeout(()=>{
     engagementArea.style.display="none"; 
-    preText.style.display="none"; 
+    preText.style.display="none"; // hide pre-hand text after overlap
     startLove();
   },900);
 }
@@ -350,14 +307,14 @@ function moveHandsToCenter(){
 /* ===== HEART EXPLOSION ===== */
 function triggerHeartExplosion(){
   for(let i=0;i<50;i++){
-    const heartDiv = document.createElement("div");
-    heartDiv.innerHTML="❤️";
-    heartDiv.className="heart";
-    heartDiv.style.left = (window.innerWidth/2 -10 + Math.random()*40 -20)+"px";
-    heartDiv.style.top = (window.innerHeight/2 -10 + Math.random()*40 -20)+"px";
-    heartDiv.style.fontSize = (10+Math.random()*20)+"px";
-    document.body.appendChild(heartDiv);
-    setTimeout(()=>heartDiv.remove(),2000);
+    const heart = document.createElement("div");
+    heart.innerHTML="❤️";
+    heart.className="heart";
+    heart.style.left = (window.innerWidth/2 -10 + Math.random()*40 -20)+"px";
+    heart.style.top = (window.innerHeight/2 -10 + Math.random()*40 -20)+"px";
+    heart.style.fontSize = (10+Math.random()*20)+"px";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),2000);
   }
 }
 
@@ -369,7 +326,7 @@ function startLove(){
 
 function typeWriter(){
   if(i<text.length){
-    typingElement.innerHTML+=text.charAt(i);
+    typingElement.innerHTML += text.charAt(i);
     i++;
     typingElement.scrollTop = typingElement.scrollHeight; // auto-scroll
     setTimeout(typeWriter,40);
@@ -395,6 +352,7 @@ function startAutoSlide(){
 
 function updateCarousel(){
   const images=track.children;
+
   for(let k=0;k<images.length;k++){
     let offset=k-index;
 
@@ -434,5 +392,6 @@ setInterval(()=>{
   setTimeout(()=>heart.remove(),6000);
 },500);
 </script>
+
 </body>
-  </html>
+</html>
