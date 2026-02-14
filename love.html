@@ -52,7 +52,7 @@ body{
   top:0;
   left:0;
   z-index:1000;
-  display:none;
+  display:none; /* initially hidden until pre-text moves */
 }
 
 #maleHand{
@@ -69,14 +69,14 @@ body{
   position:fixed;
   left:calc(100% - 260px);
   top:50%;
-  transform:translateY(-50%) scaleX(-1); /* correct direction 👈 */
+  transform:translateY(-50%); /* KEEP ORIGINAL IMAGE DIRECTION */
   width:260px;
   cursor:grab;
   touch-action:none;
   z-index:1001;
 }
 
-/* Your original content styles */
+/* Your existing content styles */
 #content{
   display:none;
   max-width:900px;
@@ -168,7 +168,7 @@ body{
 
 <audio id="music" src="romantic.mp3" loop></audio>
 
-<!-- Your existing content -->
+<!-- Your original content -->
 <div id="content">
 <div id="typingText"></div>
 <div class="carousel-container" id="carousel">
@@ -177,7 +177,7 @@ body{
 </div>
 
 <script>
-// Your typing text
+// Typing text
 const text = `Happy valentine's day Ammaduu❤️
 
 On 22nd June 2022-
@@ -198,7 +198,6 @@ On this Valentine's Day, you said yes to me💘
 Love You Ammaduu😘`;
 
 let i=0, index=0, autoSlide;
-
 const typingElement=document.getElementById("typingText");
 const track=document.getElementById("track");
 const male=document.getElementById("maleHand");
@@ -262,7 +261,7 @@ function checkHandsOverlap(){
     setTimeout(()=>preText.style.display="none",300);
     
     // Hide hands
-    engagementArea.style.transition="all 0.3s ease";
+    engagementArea.style.transition = "all 0.3s ease";
     engagementArea.style.opacity = 0;
     setTimeout(()=>engagementArea.style.display="none",300);
     
@@ -282,6 +281,7 @@ function typeWriter(){
   if(i<text.length){
     typingElement.innerHTML+=text.charAt(i);
     i++;
+    typingElement.scrollTop = typingElement.scrollHeight; // auto scroll
     setTimeout(typeWriter,40);
   }else{
     showCarousel();
