@@ -35,6 +35,7 @@ body{
   cursor:pointer;
   animation:bounce 1s infinite;
   z-index:1000;
+  pointer-events:auto; /* ensure heart is clickable */
 }
 
 @keyframes bounce{
@@ -205,7 +206,7 @@ for(let j=1;j<=30;j++){
   track.appendChild(img);
 }
 
-/* Heart click sequence - remove heart completely */
+/* Bouncing heart click */
 bouncingHeart.addEventListener('click', ()=>{
   bouncingHeart.remove();
   document.getElementById("music").play().catch(()=>{});
@@ -251,7 +252,6 @@ femaleHand.addEventListener('pointermove', (e)=>{
   const fRect = femaleHand.getBoundingClientRect();
   const mRect = maleHand.getBoundingClientRect();
   if(Math.abs(fRect.left - mRect.left) < 20 && Math.abs(fRect.top - mRect.top) < 20){
-    // Hands overlap → remove both
     femaleHand.style.display = "none";
     maleHand.style.display = "none";
     startOriginalLove();
