@@ -32,7 +32,7 @@ body{
   position:fixed;
   top:50%;
   left:50%;
-  transform:translate(-50%,-60%) scale(0.9);
+  transform:translate(-50%,-50%) scale(1);
   color:#fff0f5;
   font-family: 'Dancing Script', cursive;
   font-size:2.5em;
@@ -51,16 +51,16 @@ body{
   100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
-.fadeOut {
-  animation: fadeOutScale 1s forwards;
-}
-
 @keyframes fadeOutScale {
-  0% { opacity: 1; transform: translate(-50%, -10%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -10%) scale(0.8); }
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
 }
 
-/* HANDS */
+.fadeOut {
+  animation: fadeOutScale 0.6s forwards;
+}
+
+/* ===== HANDS ===== */
 #engagementArea{
   position:fixed;
   width:100%;
@@ -92,7 +92,7 @@ body{
   z-index:1001;
 }
 
-/* CONTENT */
+/* ===== CONTENT ===== */
 #content{
   display:none;
   max-width:900px;
@@ -235,12 +235,11 @@ for(let j=1;j<=30;j++){
   track.appendChild(img);
 }
 
-/* ===== PRE-HAND TEXT: show 2s, scroll top, show hands, disappear immediately ===== */
+/* ===== PRE-HAND TEXT: show 2s, then hands appear & text disappears ===== */
 setTimeout(() => {
-  preText.style.top = "10%";           // move to top
-  engagementArea.style.display = "block"; // show hands
-  preText.classList.add("fadeOut");      // immediately fade out
-  setTimeout(() => preText.style.display = "none", 1000);
+  engagementArea.style.display = "block"; 
+  preText.classList.add("fadeOut"); 
+  setTimeout(() => { preText.style.display = "none"; }, 600);
 }, 2000);
 
 /* ===== DRAG SYSTEM ===== */
@@ -273,6 +272,7 @@ window.addEventListener("pointermove",(e)=>{
   female.style.top = "50%";
   female.style.transform = "translateY(-50%)";
 
+  // Male hand follows female hand
   const maleTarget = newLeft - male.offsetWidth + 30;
   const maleCurrent = male.offsetLeft;
   const maleStep = (maleTarget - maleCurrent) * 0.1;
