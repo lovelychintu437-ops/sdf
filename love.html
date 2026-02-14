@@ -41,6 +41,7 @@ body{
   z-index:2000;
   text-shadow: 2px 2px 10px rgba(255,182,193,0.8);
   line-height:1.3;
+  transition: all 1s ease;
 }
 
 /* HANDS */
@@ -51,7 +52,7 @@ body{
   top:0;
   left:0;
   z-index:1000;
-  display:none; /* hide initially */
+  display:none;
 }
 
 #maleHand{
@@ -160,7 +161,7 @@ body{
 
 <!-- Pre-Hand Text -->
 <div id="preText">
-  Ammadu, will you hold my hand forever? <br> Let’s get married. ❤️
+  Ammadu, my heart is yours forever… will you take my hand and walk with me through life? ❤️
 </div>
 
 <!-- HANDS -->
@@ -218,12 +219,11 @@ for(let j=1;j<=30;j++){
   track.appendChild(img);
 }
 
-/* ===== Show Hands After Pre-Text ===== */
+/* ===== Pre-Text Scroll & Show Hands ===== */
 setTimeout(()=>{
-  preText.style.transition="opacity 1s";
-  preText.style.opacity=0;
+  preText.style.transform="translate(-50%, -60%)";
+  preText.style.opacity=0.8;
   setTimeout(()=>{
-    preText.style.display="none";
     engagementArea.style.display="block";
   },1000);
 },3000);
@@ -258,7 +258,7 @@ window.addEventListener("pointermove",(e)=>{
   female.style.top = "50%";
   female.style.transform = "translateY(-50%)";
 
-  // Move male hand gradually toward female hand
+  // Male hand follows female hand
   const maleTarget = newLeft - male.offsetWidth + 30;
   const maleCurrent = male.offsetLeft;
   const maleStep = (maleTarget - maleCurrent) * 0.1;
@@ -271,7 +271,6 @@ window.addEventListener("pointermove",(e)=>{
 function checkHandsOverlap(){
   const m = male.getBoundingClientRect();
   const f = female.getBoundingClientRect();
-
   const distance = f.left - (m.left + m.width);
 
   if(distance <= 0){
@@ -281,7 +280,7 @@ function checkHandsOverlap(){
   }
 }
 
-/* ===== MOVE HANDS TO CENTER ===== */
+/* ===== MOVE HANDS TO CENTER & HIDE PRE-TEXT ===== */
 function moveHandsToCenter(){
   if(moved) return;
   moved=true;
@@ -295,7 +294,8 @@ function moveHandsToCenter(){
   female.style.left=(center-30)+"px";
 
   setTimeout(()=>{
-    engagementArea.style.display="none"; // hide hands
+    engagementArea.style.display="none"; 
+    preText.style.display="none"; // hide pre-hand text after overlap
     startLove();
   },900);
 }
