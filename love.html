@@ -235,10 +235,12 @@ for(let j=1;j<=30;j++){
   track.appendChild(img);
 }
 
-/* ===== PRE-HAND TEXT: show for 2s, scroll to top, show hands ===== */
+/* ===== PRE-HAND TEXT: show 2s, scroll top, show hands, disappear immediately ===== */
 setTimeout(() => {
-  preText.style.top = "10%";          // move to top
+  preText.style.top = "10%";           // move to top
   engagementArea.style.display = "block"; // show hands
+  preText.classList.add("fadeOut");      // immediately fade out
+  setTimeout(() => preText.style.display = "none", 1000);
 }, 2000);
 
 /* ===== DRAG SYSTEM ===== */
@@ -271,7 +273,6 @@ window.addEventListener("pointermove",(e)=>{
   female.style.top = "50%";
   female.style.transform = "translateY(-50%)";
 
-  // Male hand follows female hand
   const maleTarget = newLeft - male.offsetWidth + 30;
   const maleCurrent = male.offsetLeft;
   const maleStep = (maleTarget - maleCurrent) * 0.1;
@@ -293,7 +294,7 @@ function checkHandsOverlap(){
   }
 }
 
-/* ===== MOVE HANDS TO CENTER & HIDE PRE-TEXT WITH CINEMATIC FADE ===== */
+/* ===== MOVE HANDS TO CENTER & HIDE PRE-TEXT ===== */
 function moveHandsToCenter(){
   if(moved) return;
   moved=true;
@@ -308,9 +309,6 @@ function moveHandsToCenter(){
 
   setTimeout(()=>{
     engagementArea.style.display="none"; 
-    // cinematic fade-out
-    preText.classList.add("fadeOut");
-    setTimeout(()=> preText.style.display="none", 1000);
     startLove();
   },900);
 }
