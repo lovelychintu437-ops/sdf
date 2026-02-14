@@ -65,7 +65,7 @@ body{
   top:0;
   left:0;
   z-index:1000;
-  display:none;
+  display:none; /* hidden initially */
 }
 
 #maleHand{
@@ -232,16 +232,20 @@ for(let j=1;j<=30;j++){
   track.appendChild(img);
 }
 
-/* ===== PRE-HAND TEXT ANIMATION ===== */
-/* Show hands under text */
-engagementArea.style.display = "block";
+/* ===== PRE-HAND TEXT & HANDS TIMING ===== */
+engagementArea.style.display = "none"; // hands hidden initially
 
-/* Move pre-hand text to top after 3 seconds */
+// Move pre-text to top after 3 seconds
 setTimeout(() => {
   preText.classList.add("moveTop");
+
+  // Show hands **after text move** (1s CSS transition)
+  setTimeout(() => {
+    engagementArea.style.display = "block";
+  }, 1000);
 }, 3000);
 
-/* Pre-hand text disappears on first touch/click of female hand */
+// Pre-hand text disappears on first touch/click of female hand
 female.addEventListener("pointerdown", () => {
   if(preText.style.display !== "none"){
     preText.classList.add("fadeOut");
@@ -249,8 +253,6 @@ female.addEventListener("pointerdown", () => {
 
     // Start music
     music.play().catch(()=>{});
-
-    // Dragging will now be active via your existing code
   }
 });
 
