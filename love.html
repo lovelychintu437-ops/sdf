@@ -109,9 +109,13 @@ body{
 #typingText{
   font-size:1.2em;
   line-height:1.9;
-  white-space:pre-line;
+  white-space:pre-line;   /* preserves paragraph breaks */
   min-height:300px;
-  overflow-y:auto;
+  max-height:60vh;        /* limit for scrolling */
+  overflow-y:auto;        /* allow vertical scroll */
+  padding:10px;
+  box-sizing:border-box;
+  scroll-behavior: smooth;
 }
 
 .carousel-container{
@@ -145,7 +149,7 @@ body{
   box-shadow:0 25px 50px rgba(0,0,0,0.4);
 }
 
-/* Hearts */
+/* Floating Hearts */
 .heart{
   position:fixed;
   bottom:-20px;
@@ -185,8 +189,7 @@ body{
 
 <!-- Pre-Hand Text -->
 <div id="preText">
-  Ammadu, will you hold my hand forever?
-  Let’s get married.
+  Ammadu, will you hold my hand forever? Let’s get married.
 </div>
 
 <!-- HANDS -->
@@ -209,7 +212,7 @@ body{
 const text = `Happy valentine's day Ammaduu❤️
 
 On 22nd June 2022-
-the first time I saw you on your birthday, in that purple dress. 
+the first time I saw you on your birthday, in that purple dress.
 That was the day I fell in love with you 💜
 
 Every moment with you makes me happy.
@@ -363,7 +366,7 @@ function typeWriter(){
   if(i<text.length){
     typingElement.innerHTML+=text.charAt(i);
     i++;
-    typingElement.scrollTop = typingElement.scrollHeight;
+    typingElement.scrollTop = typingElement.scrollHeight; // auto-scroll
     setTimeout(typeWriter,40);
   }else{
     showCarousel();
@@ -428,4 +431,4 @@ setInterval(()=>{
 
 </script>
 </body>
-  </html>
+</html>
