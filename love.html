@@ -32,7 +32,7 @@ body{
   position:fixed;
   top:50%;
   left:50%;
-  transform:translate(-50%,-50%) scale(1);
+  transform:translate(-50%,-50%);
   color:#fff0f5;
   font-family: 'Dancing Script', cursive;
   font-size:2.5em;
@@ -41,23 +41,20 @@ body{
   z-index:2000;
   text-shadow: 2px 2px 10px rgba(255,182,193,0.8);
   line-height:1.3;
-  opacity:0;
-  transition: all 0.8s ease;
-  animation: fadeInScale 1.5s forwards;
+  opacity:1;
+  transition: all 1s ease;
 }
 
-@keyframes fadeInScale {
-  0% { opacity: 0; transform: translate(-50%, -60%) scale(0.9); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-@keyframes fadeOutScale {
-  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+#preText.moveTop{
+  top:10%;            
+  transform:translate(-50%,0);
+  font-size:2em;
+  opacity:1;
 }
 
 .fadeOut {
-  animation: fadeOutScale 0.6s forwards;
+  opacity:0;
+  transform:translate(-50%,0) scale(0.9);
 }
 
 /* ===== HANDS ===== */
@@ -177,7 +174,7 @@ body{
 
 <!-- Pre-Hand Text -->
 <div id="preText">
-  Ammadu, will you hold my hand forever? Let’s get married.
+  Ammadu, will you hold my hand forever?<br>Let's get married.
 </div>
 
 <!-- HANDS -->
@@ -235,14 +232,29 @@ for(let j=1;j<=30;j++){
   track.appendChild(img);
 }
 
-/* ===== PRE-HAND TEXT: show 2s, then hands appear & text disappears ===== */
-setTimeout(() => {
-  engagementArea.style.display = "block"; 
-  preText.classList.add("fadeOut"); 
-  setTimeout(() => { preText.style.display = "none"; }, 600);
-}, 2000);
+/* ===== PRE-HAND TEXT ANIMATION ===== */
+/* Show hands under text */
+engagementArea.style.display = "block";
 
-/* ===== DRAG SYSTEM ===== */
+/* Move pre-hand text to top after 3 seconds */
+setTimeout(() => {
+  preText.classList.add("moveTop");
+}, 3000);
+
+/* Pre-hand text disappears on first touch/click of female hand */
+female.addEventListener("pointerdown", () => {
+  if(preText.style.display !== "none"){
+    preText.classList.add("fadeOut");
+    setTimeout(() => { preText.style.display = "none"; }, 600);
+
+    // Start music
+    music.play().catch(()=>{});
+
+    // Dragging will now be active via your existing code
+  }
+});
+
+/* ===== DRAGGING HANDS & OVERLAP (EXISTING) ===== */
 let dragging=false;
 let moved=false;
 let startX=0;
@@ -272,60 +284,32 @@ window.addEventListener("pointermove",(e)=>{
   female.style.top = "50%";
   female.style.transform = "translateY(-50%)";
 
-  // Male hand follows female hand
   const maleTarget = newLeft - male.offsetWidth + 30;
   const maleCurrent = male.offsetLeft;
   const maleStep = (maleTarget - maleCurrent) * 0.1;
   male.style.left = (maleCurrent + maleStep) + "px";
 
-  checkHandsOverlap();
-});
-
-/* ===== HANDS OVERLAP CHECK ===== */
-function checkHandsOverlap(){
   const m = male.getBoundingClientRect();
   const f = female.getBoundingClientRect();
   const distance = f.left - (m.left + m.width);
 
   if(distance <= 0){
     dragging=false;
-    moveHandsToCenter();
-    triggerHeartExplosion();
+    if(!moved){
+      moved=true;
+      const center=window.innerWidth/2;
+      male.style.transition="1s";
+      female.style.transition="1s";
+      male.style.left=(center-male.offsetWidth)+"px";
+      female.style.left=(center-30)+"px";
+
+      setTimeout(()=>{
+        engagementArea.style.display="none"; 
+        startLove();
+      },900);
+    }
   }
-}
-
-/* ===== MOVE HANDS TO CENTER & HIDE PRE-TEXT ===== */
-function moveHandsToCenter(){
-  if(moved) return;
-  moved=true;
-
-  const center=window.innerWidth/2;
-
-  male.style.transition="1s";
-  female.style.transition="1s";
-
-  male.style.left=(center-male.offsetWidth)+"px";
-  female.style.left=(center-30)+"px";
-
-  setTimeout(()=>{
-    engagementArea.style.display="none"; 
-    startLove();
-  },900);
-}
-
-/* ===== HEART EXPLOSION ===== */
-function triggerHeartExplosion(){
-  for(let i=0;i<50;i++){
-    const heart = document.createElement("div");
-    heart.innerHTML="❤️";
-    heart.className="heart";
-    heart.style.left = (window.innerWidth/2 -10 + Math.random()*40 -20)+"px";
-    heart.style.top = (window.innerHeight/2 -10 + Math.random()*40 -20)+"px";
-    heart.style.fontSize = (10+Math.random()*20)+"px";
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),2000);
-  }
-}
+});
 
 /* ===== LOVE FLOW ===== */
 function startLove(){
