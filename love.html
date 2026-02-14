@@ -44,12 +44,12 @@ body{
   pointer-events:none;
 }
 
-/* 👈 Female hand (RIGHT, now faces left) */
+/* 👈 Female hand (RIGHT, faces left) */
 #femaleHand{
   position:fixed;
   left:calc(100% - 260px);
   top:50%;
-  transform:translateY(-50%); /* remove rotateY */
+  transform:translateY(-50%);
   width:260px;
   cursor:grab;
   touch-action:none;
@@ -66,8 +66,13 @@ body{
 #content{
   display:none;
   max-width:900px;
-  margin:140px auto 40px;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
   padding:20px;
+  text-align:center;
+  color:white;
 }
 
 #typingText{
@@ -183,14 +188,14 @@ const female=document.getElementById("femaleHand");
 const engagementArea=document.getElementById("engagementArea");
 const music=document.getElementById("music");
 
-/* Load photos */
+/* Load 30 photos */
 for(let j=1;j<=30;j++){
   const img=document.createElement("img");
   img.src="pic"+j+".jpg";
   track.appendChild(img);
 }
 
-/* ===== DRAG SYSTEM (Desktop + Mobile) ===== */
+/* ===== DRAG SYSTEM ===== */
 let dragging=false;
 let moved=false;
 let startX=0;
@@ -198,10 +203,10 @@ let startLeft=0;
 
 female.addEventListener("pointerdown",(e)=>{
   dragging=true;
-  startX = e.clientX;
-  startLeft = female.offsetLeft;
+  startX=e.clientX;
+  startLeft=female.offsetLeft;
 
-  /* 🎵 Play song immediately */
+  /* Play song immediately */
   music.play().catch(()=>{});
 });
 
@@ -213,7 +218,6 @@ window.addEventListener("pointermove",(e)=>{
   const deltaX = e.clientX - startX;
   let newLeft = startLeft + deltaX;
 
-  /* Constrain within screen */
   const minLeft = window.innerWidth*0.25;
   const maxLeft = window.innerWidth - female.offsetWidth - 10;
   if(newLeft < minLeft) newLeft = minLeft;
@@ -221,15 +225,24 @@ window.addEventListener("pointermove",(e)=>{
 
   female.style.left = newLeft + "px";
   female.style.top = "50%";
-  female.style.transform = "translateY(-50%)"; // no rotate
+  female.style.transform = "translateY(-50%)";
 
-  /* Check if female hand reached center */
-  const center = window.innerWidth / 2;
-  if(newLeft + female.offsetWidth/2 >= center - 20){
+  checkHandsOverlap();
+});
+
+/* ===== CHECK HANDS OVERLAP ===== */
+function checkHandsOverlap(){
+  const m=male.getBoundingClientRect();
+  const f=female.getBoundingClientRect();
+
+  // Distance between male right and female left
+  const distance = f.left - (m.left + m.width);
+
+  if(distance <= 0){ // overlap!
     dragging=false;
     moveHandsToCenter();
   }
-});
+}
 
 /* ===== MOVE HANDS TO CENTER ===== */
 function moveHandsToCenter(){
@@ -242,16 +255,15 @@ function moveHandsToCenter(){
   female.style.transition="1s";
 
   male.style.left=(center-male.offsetWidth)+"px";
-  female.style.left=(center-30)+"px"; // Slight overlap
+  female.style.left=(center-30)+"px"; // slight overlap
 
-  /* Hide hands after reaching middle */
   setTimeout(()=>{
-    engagementArea.style.display="none";
+    engagementArea.style.display="none"; // hide hands
     startLove();
-  },1000);
+  },900);
 }
 
-/* ===== LOVE CONTENT (with auto-scroll) ===== */
+/* ===== LOVE FLOW ===== */
 function startLove(){
   document.getElementById("content").style.display="block";
   typeWriter();
@@ -262,8 +274,7 @@ function typeWriter(){
     typingElement.innerHTML+=text.charAt(i);
     i++;
 
-    // Auto-scroll to bottom
-    typingElement.scrollTop = typingElement.scrollHeight;
+    typingElement.scrollTop = typingElement.scrollHeight; // auto-scroll
 
     setTimeout(typeWriter,40);
   }else{
