@@ -34,8 +34,8 @@ body{
   font-size:80px;
   cursor:pointer;
   animation:bounce 1s infinite;
-  z-index:1000;
-  pointer-events:auto; /* ensure heart is clickable */
+  z-index:2000;
+  pointer-events:auto;
 }
 
 @keyframes bounce{
@@ -53,7 +53,7 @@ body{
   text-align:center;
   opacity:0;
   transition:all 1s ease;
-  z-index:1000;
+  z-index:1500;
   max-width:80%;
 }
 
@@ -64,7 +64,7 @@ body{
   aspect-ratio:1/1;
   bottom:10%;
   cursor:pointer;
-  z-index:1000;
+  z-index:1500;
   user-select:none;
   touch-action:none;
 }
@@ -161,7 +161,6 @@ body{
 <!-- Original content -->
 <div id="content">
   <div id="typingText"></div>
-
   <div class="carousel-container" id="carousel">
     <div class="carousel-track" id="track"></div>
   </div>
@@ -206,7 +205,7 @@ for(let j=1;j<=30;j++){
   track.appendChild(img);
 }
 
-/* Bouncing heart click */
+/* Heart click */
 bouncingHeart.addEventListener('click', ()=>{
   bouncingHeart.remove();
   document.getElementById("music").play().catch(()=>{});
@@ -217,6 +216,12 @@ bouncingHeart.addEventListener('click', ()=>{
     preHandText.style.top = "30%";
     femaleHand.style.display = "block";
     maleHand.style.display = "block";
+
+    // Initialize male hand positions
+    maleHand.style.left = '25%';
+    maleHand.style.top = '70%';
+    femaleHand.style.right = '25%';
+    femaleHand.style.top = '70%';
   },3000);
 });
 
@@ -240,18 +245,20 @@ femaleHand.addEventListener('pointermove', (e)=>{
   femaleHand.style.left = newX + 'px';
   femaleHand.style.top = newY + 'px';
 
-  // Male hand moves automatically to overlap
-  let maleX = parseFloat(maleHand.style.left);
-  let maleY = parseFloat(maleHand.style.top);
-  let targetX = newX - 150; // male hand moves toward female
-  let targetY = newY;
+  // Move male hand automatically toward female
+  let maleRect = maleHand.getBoundingClientRect();
+  let femaleRect = femaleHand.getBoundingClientRect();
+
+  let maleX = maleRect.left + window.scrollX;
+  let maleY = maleRect.top + window.scrollY;
+  let targetX = femaleRect.left - 150;
+  let targetY = femaleRect.top;
+
   maleHand.style.left = maleX + (targetX - maleX)*0.1 + 'px';
   maleHand.style.top  = maleY + (targetY - maleY)*0.1 + 'px';
 
   // Check for overlap
-  const fRect = femaleHand.getBoundingClientRect();
-  const mRect = maleHand.getBoundingClientRect();
-  if(Math.abs(fRect.left - mRect.left) < 20 && Math.abs(fRect.top - mRect.top) < 20){
+  if(Math.abs(femaleRect.left - maleRect.left)<20 && Math.abs(femaleRect.top - maleRect.top)<20){
     femaleHand.style.display = "none";
     maleHand.style.display = "none";
     startOriginalLove();
@@ -263,7 +270,7 @@ femaleHand.addEventListener('pointerup', (e)=>{
   femaleHand.releasePointerCapture(e.pointerId);
 });
 
-/* Original content functions */
+/* Original content */
 function startOriginalLove(){
   document.getElementById("content").style.display="block";
   typeWriter();
