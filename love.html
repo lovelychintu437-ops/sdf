@@ -52,7 +52,7 @@ body{
   top:0;
   left:0;
   z-index:1000;
-  display:none; /* initially hidden until pre-text moves */
+  display:none; /* hidden until pre-text moves */
 }
 
 #maleHand{
@@ -76,7 +76,7 @@ body{
   z-index:1001;
 }
 
-/* Your existing content styles */
+/* Your original content styles */
 #content{
   display:none;
   max-width:900px;
@@ -168,7 +168,7 @@ body{
 
 <audio id="music" src="romantic.mp3" loop></audio>
 
-<!-- Your original content -->
+<!-- Original Content -->
 <div id="content">
 <div id="typingText"></div>
 <div class="carousel-container" id="carousel">
@@ -205,14 +205,14 @@ const female=document.getElementById("femaleHand");
 const engagementArea=document.getElementById("engagementArea");
 const preText=document.getElementById("preText");
 
-/* Load 30 photos */
+/* Load photos */
 for(let j=1;j<=30;j++){
   const img=document.createElement("img");
   img.src="pic"+j+".jpg";
   track.appendChild(img);
 }
 
-/* ===== PRE-HAND TEXT + HANDS SEQUENCE ===== */
+/* ===== PRE-HAND TEXT SEQUENCE ===== */
 setTimeout(()=>{
   // Move pre-text fast to top
   preText.style.top="20px";
@@ -220,10 +220,6 @@ setTimeout(()=>{
   
   // Show hands in middle
   engagementArea.style.display="block";
-  male.style.left="0px";
-  male.style.top="50%";
-  female.style.left=`calc(100% - ${female.offsetWidth}px)`;
-  female.style.top="50%";
 },2000);
 
 /* ===== DRAG SYSTEM ===== */
@@ -281,7 +277,7 @@ function typeWriter(){
   if(i<text.length){
     typingElement.innerHTML+=text.charAt(i);
     i++;
-    typingElement.scrollTop = typingElement.scrollHeight; // auto scroll
+    typingElement.scrollTop = typingElement.scrollHeight;
     setTimeout(typeWriter,40);
   }else{
     showCarousel();
