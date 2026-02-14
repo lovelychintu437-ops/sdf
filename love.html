@@ -68,12 +68,12 @@ body{
 .hand{
   position:fixed;
   top:50%;
-  width:120px;
+  width:180px;  /* Bigger hand images */
   height:auto;
   transform:translateY(-50%);
   transition: all 2s ease-in-out;
   z-index:1000;
-  display:none; /* Hands hidden initially */
+  display:none; /* hidden initially */
 }
 
 #maleHand{
@@ -82,6 +82,7 @@ body{
 
 #femaleHand{
   right:20%;
+  touch-action: none; /* For drag support on mobile */
 }
 
 /* Content & Typing */
@@ -226,31 +227,51 @@ function startLove(){
   // Move text slightly up
   setTimeout(()=>preText.style.transform = "translate(-50%, -60%)", 50);
   
-  // After 3 seconds, show hands
+  // Show hands after 3 seconds
   setTimeout(()=>{
     maleHand.style.display = "block";
     femaleHand.style.display = "block";
   }, 3000);
 }
 
-/* Female Hand Clicked */
-femaleHand.addEventListener("click", ()=>{
-  // Hide pre-hand text
-  preText.style.opacity = "0";
+/* Drag/Touch female hand triggers pre-text disappearance & hand movement */
+let dragging = false;
+femaleHand.addEventListener("pointerdown", (e)=>{
+  dragging = true;
+  preText.style.opacity = "0"; // pre-hand text disappears when user touches
+});
+
+femaleHand.addEventListener("pointermove", (e)=>{
+  if(dragging){
+    // Move female hand horizontally toward center
+    let centerX = window.innerWidth / 2;
+    let handWidth = femaleHand.offsetWidth;
+    let newRight = Math.max(0, window.innerWidth - e.clientX - handWidth/2);
+    femaleHand.style.right = newRight + "px";
+    
+    // Male hand moves in sync
+    maleHand.style.left = e.clientX - handWidth/2 + "px";
+  }
+});
+
+femaleHand.addEventListener("pointerup", (e)=>{
+  dragging = false;
+  // After short delay, auto-align to center
+  femaleHand.style.transition = "all 1s ease";
+  maleHand.style.transition = "all 1s ease";
   
-  // Animate hands to center
   femaleHand.style.right = "50%";
   femaleHand.style.transform = "translate(50%, -50%)";
   
   maleHand.style.left = "50%";
   maleHand.style.transform = "translate(-50%, -50%)";
   
-  // After 2 seconds hands overlap
+  // After 1s (hands overlap), hide hands & start typing
   setTimeout(()=>{
-    maleHand.style.display = "none";
     femaleHand.style.display = "none";
+    maleHand.style.display = "none";
     startTyping();
-  }, 2000);
+  }, 1000);
 });
 
 /* Typing Effect */
