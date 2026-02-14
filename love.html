@@ -73,6 +73,7 @@ body{
   transform:translateY(-50%);
   transition: all 2s ease-in-out;
   z-index:1000;
+  display:none; /* Hands hidden initially */
 }
 
 #maleHand{
@@ -219,29 +220,38 @@ function startLove(){
   document.getElementById("envelope").style.display="none";
   document.getElementById("music").play().catch(()=>{});
   
-  // Show Pre-Hand Text
+  // Show pre-hand text
   preText.style.opacity = "1";
   
-  // Start hands animation after small delay
-  setTimeout(()=>animateHands(), 1000);
+  // Move text slightly up
+  setTimeout(()=>preText.style.transform = "translate(-50%, -60%)", 50);
+  
+  // After 3 seconds, show hands
+  setTimeout(()=>{
+    maleHand.style.display = "block";
+    femaleHand.style.display = "block";
+  }, 3000);
 }
 
-/* Animate Hands */
-function animateHands(){
-  // Female moves to center
+/* Female Hand Clicked */
+femaleHand.addEventListener("click", ()=>{
+  // Hide pre-hand text
+  preText.style.opacity = "0";
+  
+  // Animate hands to center
   femaleHand.style.right = "50%";
   femaleHand.style.transform = "translate(50%, -50%)";
   
-  // Male moves to center in sync
   maleHand.style.left = "50%";
   maleHand.style.transform = "translate(-50%, -50%)";
   
-  // After hands overlap (~2s), hide pre-text & start typing
+  // After 2 seconds hands overlap
   setTimeout(()=>{
-    preText.style.opacity = "0";
+    maleHand.style.display = "none";
+    femaleHand.style.display = "none";
     startTyping();
   }, 2000);
-}
+});
 
 /* Typing Effect */
 function startTyping(){
